@@ -1,68 +1,62 @@
-![Homepage](screenshots/homepage.png)
+<p align="center"><a href="https://laravel.com" target="_blank"><img loading="lazy"src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-# Web Portal Tempek Klender
 
-## Overview
-Web Portal Tempek Klender is a dynamic and interactive web platform designed for the Tempek Klender organization. This portal serves as a centralized hub for members to stay informed about upcoming events, view posts, manage organizational roles, and engage with various features that promote community involvement and efficient management.
+## EZ-Commerce Project Description
 
-## Key Features
+### Overview
 
-1. **Homepage**
-     ![Homepage](screenshots/homepage.png)
-   - A welcoming and intuitive landing page showcasing the latest posts, upcoming events, and announcements.
+EZ-Commerce is an innovative e-commerce platform designed to simplify the online shopping experience for both customers and merchants. The platform offers a comprehensive suite of features that enable seamless product management, user interaction, secure transactions, and personalized shopping experiences.
 
-3. **Create Post**
-![Create Post](screenshots/create-post.png)
-   - A user-friendly interface allowing authorized members to create and share new posts, complete with text, images, and multimedia content.
+### Usage
+1. Clone the project `git clone https://github.com/kevintherm/ez-commerce`
+2. Install dependencies `composer install`
+3. Copy `.env.example` to `.env`: `cp ./env.example ./env`
+4. Generate application key `php artisan key:generate`
+5. Migrate database, make sure you have the db 'tokonline' `php artisan migrate:fresh --seed`
+6. Run artisan serve `php artisan serve`
+7. Go to your localsite
 
-4. **Dashboard**
-![Dashboard Posts](screenshots/dashbard-posts.png)
-   - A comprehensive dashboard offering an overview of the organization's activities, including recent posts, member statistics, and event highlights.
+### Key Features
 
-5. **Dashboard - Posts Management**
-![Dashboard Members](screenshots/dashboard-members.png)
-   - An administrative view where authorized users can manage all posts, including editing, deleting, and updating content.
+#### 1. Cart Feature
+The cart feature allows customers to effortlessly add, remove, and manage items in their shopping cart, providing a user-friendly interface for a smooth shopping experience.
 
-6. **Dashboard - Members Management**
-![Dashboard](screenshots/dashboard.png)
-   - A dedicated section for managing member information, viewing member profiles, and updating member roles and permissions.
+![Cart Feature](imgs/cart-feature.png)
 
-7. **Edit Member**
- ![Edit Member](screenshots/edit-member.png)
-   - A detailed form for editing member profiles, including contact information, roles, and membership status.
+#### 2. Dashboard for Products
+Merchants can easily manage their product listings through a robust dashboard. The dashboard offers intuitive controls for adding, editing, and organizing products.
 
-8. **Edit Post**
- ![Edit Post](screenshots/edit-posts.png)
-   - A streamlined interface for editing existing posts, allowing for quick updates and modifications to keep content relevant and accurate.
+![Dashboard Products](imgs/dashboard-products.png)
 
-9. **Gallery**
-![Gallery](screenshots/gallery.png)
-   - A visual gallery displaying images from past events, gatherings, and other organizational activities, fostering a sense of community and shared memories.
+#### 3. Discussion Feature
+The discussion feature facilitates customer engagement by allowing users to ask questions and share reviews directly on product pages. This interactive element helps build community and trust. Dummy data is shown bellow.
 
-10. **Member Profile Photo History**
-![Member Profile Photo History](screenshots/member-profile-photo-history.png)
-   - A feature that maintains a history of profile photos for each member, providing a visual timeline of their engagement with the organization.
+![Discussion Feature](imgs/disscussion-feature.png)
 
-11. **Permission Manager**
-![Permission Manager](screenshots/permission-manager.png)
-    - A powerful tool for managing user permissions, ensuring that members have appropriate access to various features and administrative functions.
+#### 4. Multi-User Shop
+EZ-Commerce supports multi-user functionality, enabling multiple sellers to manage their shops on the same platform. Each seller has dedicated access to manage their inventory and sales.
 
-12. **Roles Manager**
- ![Roles Manager](screenshots/roles-manager.png)
-    - An interface for defining and managing roles within the organization, allowing for customized access levels and responsibilities.
+![Multi-User Shop](imgs/multi-user-shop.png)
 
-13. **View Member**
-![View Member](screenshots/view-member.png)
-    - A detailed member profile view, showcasing individual member information, role within the organization, and engagement history.
+#### 5. Payment Feature
+Secure and efficient payment processing is integral to EZ-Commerce. The platform supports multiple payment gateways to ensure smooth and secure transactions for customers.
 
-## Objectives
-- **Community Engagement:** Enhance member participation and interaction through a centralized platform for information sharing and event announcements.
-- **Efficient Management:** Streamline administrative tasks such as post management, member updates, and role assignments.
-- **Transparency and Communication:** Foster a transparent communication channel within the organization, ensuring all members are well-informed and connected.
+![Payment Feature](imgs/payment-feature.png)
 
-## Target Audience
-- **Organization Members:** Active members looking to stay updated on organizational activities, view posts, and participate in events.
-- **Administrators:** Individuals responsible for managing content, member information, and overall platform maintenance.
-- **New Members:** Prospective members interested in learning more about Tempek Klender and its community.
+#### 6. Profile Edit
+Users can personalize their shopping experience by editing their profiles. The profile edit feature allows users to update their information, preferences, and settings with ease.
 
-By leveraging these features, Web Portal Tempek Klender aims to build a more engaged, informed, and efficiently managed community, ensuring a cohesive and collaborative organizational environment.
+![Profile Edit](imgs/profile-edit.png)
+
+#### 7. Email Verification
+To enhance security and trust, EZ-Commerce includes an email verification feature. This ensures that all users on the platform have verified their email addresses, adding an extra layer of security.
+
+![Verify Email](imgs/verify-email.png)
+
+### Conclusion
+
+EZ-Commerce is designed to provide a comprehensive and user-friendly e-commerce experience. With its rich feature set and focus on usability and security, it aims to be the go-to platform for online shopping and sales management. Whether you're a customer looking for a seamless shopping experience or a merchant wanting efficient shop management tools, EZ-Commerce has you covered.
+
+## License
+
+The app is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
