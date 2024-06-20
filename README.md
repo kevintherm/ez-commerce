@@ -7,6 +7,15 @@
 
 EZ-Commerce is an innovative e-commerce platform designed to simplify the online shopping experience for both customers and merchants. The platform offers a comprehensive suite of features that enable seamless product management, user interaction, secure transactions, and personalized shopping experiences.
 
+### Usage
+1. Clone the project `git clone https://github.com/kevintherm/ez-commerce`
+2. Install dependencies `composer install`
+3. Copy `.env.example` to `.env`: `cp ./env.example ./env`
+4. Generate application key `php artisan key:generate`
+5. Migrate database, make sure you have the db 'tokonline' `php artisan migrate:fresh --seed`
+6. Run artisan serve `php artisan serve`
+7. Go to your localsite
+
 ### Key Features
 
 #### 1. Cart Feature
