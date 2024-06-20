@@ -29,7 +29,7 @@ Merchants can easily manage their product listings through a robust dashboard. T
 ![Dashboard Products](imgs/dashboard-products.png)
 
 #### 3. Discussion Feature
-The discussion feature facilitates customer engagement by allowing users to ask questions and share reviews directly on product pages. This interactive element helps build community and trust.
+The discussion feature facilitates customer engagement by allowing users to ask questions and share reviews directly on product pages. This interactive element helps build community and trust. Dummy data is shown bellow.
 
 ![Discussion Feature](imgs/disscussion-feature.png)
 
