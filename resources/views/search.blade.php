@@ -211,7 +211,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-8">
-                        <div class="row row-cols-md-4 g-3">
+                        <div class="row row-cols-sm-2 row-cols-md-3 g-3">
                             @foreach ($products as $key => $product)
                                 @if ($product->visibility !== 0)
                                     <div class="col hp">
@@ -233,6 +233,7 @@
                                                     <span class="float-end"><a
                                                             href="/{{ $product->shop->url . '/' . $product->slug }}#reviews"
                                                             class="small text-muted text-decoration-none">
+                                                            <i class="fa fa-star" style="color: orange"></i>
                                                             {{ $product->getAvgRatings() }}
                                                         </a></span>
                                                 </div>
@@ -240,15 +241,15 @@
                                                     <a
                                                         href="/{{ $product->shop->url . '/' . $product->slug }}">{{ $product->name }}</a>
                                                 </h5>
-                                                <small>
+                                                <p>
                                                     {{ $product->condition == 2 ? 'Bekas' : 'Baru' }}
-                                                </small>
-                                                <small><a class="link link-muted" href="/{{ $product->shop->url }}">
+                                                </p>
+                                                <p><a class="link link-muted" href="/{{ $product->shop->url }}">
                                                         {{ $product->shop->name }}
-                                                    </a></small>
-                                                <small>
+                                                    </a></p>
+                                                <p>
                                                     {{ json_decode($product->shop->location)->regency }}
-                                                </small>
+                                                </p>
                                                 <div class="d-grid gap-2 my-4">
 
                                                     <a href="/{{ $product->shop->url }}/{{ $product->slug }}?cart=1"
@@ -290,7 +291,7 @@
                     <h5 class="fw-semibold text-uppercase">Cari Toko</h5>
                     {!! count($shops) ? '<h6>Menampilkan ' . count($shops) . ' Hasil</h6>' : '<h6>Tidak Dapat Menemukan Toko</h6>' !!}
                     <div class="col-12 col-lg-8">
-                        <div class="row row-cols-md-4">
+                        <div class="row row-cols-md-3">
                             @foreach ($shops as $key => $shop)
                                 <div class="col mb-3">
                                     <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
@@ -303,9 +304,12 @@
                                                     {{ Str::limit($shop->name, 25, '...') }}
                                                 </a>
                                             </h5>
-                                            <small>{{ $shop->location }}</small>
+                                            <small>{{ $shop->owner->status ? 'Online' : 'Offline' }}</small>
+                                            <p>{{ $shop->followers ?? 0 }} Followers</p>
+                                            <small>{{ json_decode($shop->location)->regency }}</small>
                                             <p class="card-text">
-                                                <i class="bi bi-star-half"></i> 5.0 <i class="bi bi-dot"></i>
+                                                <i class="bi bi-star-half"></i> {{ $shop->total_ratings }} <i
+                                                    class="bi bi-dot"></i>
                                                 Ulasan
                                             </p>
                                         </div>

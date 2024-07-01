@@ -2,18 +2,6 @@
 
 @push('head')
     <link rel="stylesheet" href="/css/hover.css">
-    <style>
-        iframe {
-            display: block;
-            /* iframes are inline by default */
-            background: #000;
-            border: none;
-            /* Reset default border */
-            height: 100vh;
-            /* Viewport-relative units */
-            width: 100vw;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -31,7 +19,7 @@
                         <button class="flex-sm-fill text-sm-center nav-link border border-primary me-1" role="button"
                             onclick="$('html, body').animate({scrollTop: $('#reviews').offset().top - 90}, 500)">Ulasan</button>
                         <button class="flex-sm-fill text-sm-center nav-link border border-primary me-1"
-                            onclick="$('html, body').animate({scrollTop: $('#discuss').offset().top - 90}, 500)">Diskusi</button>
+                            onclick="$('html, body').animate({scrollTop: $('#disqus_thread').offset().top - 90}, 500)">Diskusi</button>
                     </nav>
                 </div>
                 <div class="col-12 col-lg-3 col-product-image">
@@ -456,8 +444,20 @@
                             @endforeach
                         </div>
                     </div>
+                    <div id="disqus_thread"></div>
+                    <script>
+                        (function() { // DON'T EDIT BELOW THIS LINE
+                            var d = document,
+                                s = d.createElement('script');
+                            s.src = 'https://ezcommerce.disqus.com/embed.js';
+                            s.setAttribute('data-timestamp', +new Date());
+                            (d.head || d.body).appendChild(s);
+                        })();
+                    </script>
+                    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments
+                            powered
+                            by Disqus.</a></noscript>
                 </div>
-
             </div>
         </div>
     </main>
@@ -574,33 +574,32 @@
                 confirmButtonText: "Dapatkan Estimasi",
                 showLoaderOnConfirm: true,
                 allowOutsideClick: () => !Swal.isLoading(),
-                preConfirm: () => {
+                preConfirm: async () => {
                     try {
-                        return $.get('/utilities/getcost', {
-                            origin: @json($product->shop->location_id),
-                            destination: $('#location_regency').val(),
-                            weight: @json($product->weight * 10),
-                            courier: 'jne'
+                        const url = new URL(@json(url('/utilities/getcost')))
+                        url.searchParams.append('origin', @json($product->shop->location_id))
+                        url.searchParams.append('destination', $('#location_regency').val())
+                        url.searchParams.append('weight', @json($product->weight * 10))
+                        url.searchParams.append('courier', 'jne')
+                        const response = await fetch(url.href)
+
+                        const shippingData = await response.json()
+
+                        const formattedData = shippingData.map(courier => {
+                            return `${courier.name} : ${courier.costs.map(cost => `${cost.service} (${cost.description}): ${cost.cost.map(c => `Rp ${c.value} - Estimasi: ${c.etd} hari`).join(', ')}`).join('\n')}`;
+                        }).join('<br><br>');
+
+
+                        Swal.fire({
+                            title: 'Estimasi Ongkir',
+                            html: formattedData,
                         })
+
                     } catch (error) {
                         Swal.showValidationMessage(`Request failed: ${error}`);
                     }
                 }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const shippingData = result.value;
-                    const formattedData = shippingData.map(courier => {
-                        return `${courier.name} : ${courier.costs.map(cost => `${cost.service} (${cost.description}): ${cost.cost.map(c => `Rp ${c.value} - Estimasi: ${c.etd} hari`).join(', ')}`).join('\n')}`;
-                    }).join('<br><br>');
-
-
-                    Swal.fire({
-                        title: 'Estimasi Ongkir',
-                        html: formattedData,
-                    })
-
-                }
-            });
+            })
 
             fetch('/utilities/getprovince')
                 .then(response => response.json())
@@ -629,4 +628,5 @@
 
         });
     </script>
+    <script id="dsq-count-scr" src="//ezcommerce.disqus.com/count.js" async></script>
 @endsection

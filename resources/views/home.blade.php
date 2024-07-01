@@ -254,83 +254,28 @@
 
             <h2 class="featurette-heading fw-normal">Produk Terbaru</h2>
             <div class="card-container">
-                <div class="row row-cols-xxl-6">
-                    @foreach ($newest_products as $key => $item)
-                        @break($key == 6)
-                        <div class="col mb-3">
-                            <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
-                                <img loading="lazy"src="{{ asset('/storage/images/products/' . json_decode($item->image, true)[0]) }}"
-                                    class="card-img-top p-2" alt="Product Thumbnail">
-                                <div class="card-body">
-                                    <h5 title="{{ 'Lorem ipsum dolor sit amet' }}">
-                                        <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                            href="/{{ $item->shop->url ?? '' }}/{{ $item->slug }}">
-                                            {{ Str::limit($item->name, 75, '...') }}
-                                        </a>
-                                    </h5>
-                                    <span
-                                        class="h5 fw-bold d-block">Rp{{ number_format($item->price, 0, ',', '.') ?? '' }}</span>
-                                    <small>
-                                        @if ($item->shop->location)
-                                            {{ json_decode($item->shop->location, 1)['regency'] }}
-                                        @endif
-                                    </small>
-                                    <p class="card-text">
-                                        <i class="bi bi-star-half"></i>
-                                        {{ $item->getAvgRatings() }}
-                                        <i class="bi bi-dot"></i>
-                                        Terjual
-                                        {{ $item->sold ?? '' }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="row row-cols-md-4 row-cols-xl-5">
+                    @foreach ($latest_products as $key => $product)
+                        <x-card-product :product="$product" />
                     @endforeach
-                    <small><a href="/products" class="text-decoration-none">Tampilkan Lebih Banyak</a></small>
                 </div>
+                <small><a href="/products?orderBy=latest" class="text-decoration-none">Tampilkan Lebih
+                        Banyak</a></small>
             </div>
 
             <hr class="featurette-divider">
 
             <h2 class="featurette-heading fw-normal">Teratas Pada Kategori <span
-                    class="fw-semibold">{{ $top_on_category->name ?? '' }}</span>
+                    class="fw-semibold">{{ $toc->name }}</span>
             </h2>
             <div class="card-container">
-                <div class="row row-cols-xxl-6">
-                    @if ($top_on_category)
-                        @foreach ($top_on_category->products()->visibility('public')->get() as $key => $item)
-                            @break($key == 6)
-                            <div class="col mb-3">
-                                <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
-                                    <img loading="lazy"src="{{ asset('/storage/images/products/' . json_decode($item->image, true)[0]) }}"
-                                        class="card-img-top p-2" alt="Product Thumbnail">
-                                    <div class="card-body">
-                                        <h5 title="{{ $item->name }}">
-                                            <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                                href="/{{ $item->shop->url }}/{{ $item->slug }}">
-                                                {{ Str::limit($item->name, 75, '...') }}
-                                            </a>
-                                        </h5>
-                                        <span
-                                            class="h5 fw-bold d-block">Rp{{ number_format($item->price, 0, ',', '.') ?? '' }}</span>
-                                        <small>
-                                            @if ($item->shop->location)
-                                                {{ json_decode($item->shop->location, 1)['regency'] }}
-                                            @endif
-                                        </small>
-                                        <p class="card-text">
-                                            <i class="bi bi-star-half"></i>
-                                            {{ $item->getAvgRatings() }}
-                                            <i class="bi bi-dot"></i> Terjual
-                                            {{ $item->sold ?? '' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-                    <small><a href="/products" class="text-decoration-none">Tampilkan Lebih Banyak</a></small>
+                <div class="row row-cols-md-4 row-cols-xl-5">
+                    @foreach ($toc_products as $key => $item)
+                        <x-card-product :product="$product" />
+                    @endforeach
                 </div>
+                <small><a href="/products?subcategory={{ $toc->slug }}&orderBy=best_selling"
+                        class="text-decoration-none">Tampilkan Lebih Banyak</a></small>
             </div>
 
             <hr class="featurette-divider">
@@ -339,39 +284,13 @@
                 Terlaris
             </h2>
             <div class="card-container">
-                <div class="row row-cols-xxl-6">
+                <div class="row row-cols-md-4 row-cols-xl-5">
                     @foreach ($best_seller as $key => $item)
-                        @break($key == 6)
-                        <div class="col mb-3">
-                            <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
-                                <img loading="lazy"src="{{ asset('/storage/images/products/' . json_decode($item->image, true)[0]) }}"
-                                    class="card-img-top p-2" alt="Product Thumbnail">
-                                <div class="card-body">
-                                    <h5 title="{{ $item->name }}">
-                                        <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                            href="/{{ $item->shop->url }}/{{ $item->slug }}">
-                                            {{ Str::limit($item->name, 75, '...') }}
-                                        </a>
-                                    </h5>
-                                    <span
-                                        class="h5 fw-bold d-block">Rp{{ number_format($item->price, 0, ',', '.') ?? '' }}</span>
-                                    <small>
-                                        @if ($item->shop->location)
-                                            {{ json_decode($item->shop->location, 1)['regency'] }}
-                                        @endif
-                                    </small>
-                                    <p class="card-text">
-                                        <i class="bi bi-star-half"></i>
-                                        {{ $item->getAvgRatings() }} <i class="bi bi-dot"></i>
-                                        Terjual
-                                        {{ $item->sold }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <x-card-product :product="$product" />
                     @endforeach
-                    <small><a href="/products" class="text-decoration-none">Tampilkan Lebih Banyak</a></small>
                 </div>
+                <small><a href="/products?orderBy=best_selling" class="text-decoration-none">Tampilkan Lebih
+                        Banyak</a></small>
             </div>
 
         </div>

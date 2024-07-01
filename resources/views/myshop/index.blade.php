@@ -36,84 +36,29 @@
                                         </svg>
                                     </div>
 
-                                    <h2 class="featurette-heading fw-normal">Produk Terbaru</h2>
+                                    <h2 class="featured-heading fw-normal">Produk Terbaru</h2>
                                     <div class="card-container">
-                                        <div class="row row-cols-xxl-6">
+                                        <div class="row row-cols-md-4 row-cols-xl-5">
                                             @foreach ($products as $key => $product)
-                                                @break($key === 6)
-                                                <div class="col mb-3">
-                                                    <div class="card-product card border-0 shadow-hover"
-                                                        style="min-height: 24rem;">
-                                                        <img loading="lazy"src="{{ asset('storage/images/products/' . json_decode($product->image)[0]) }}"
-                                                            class="card-img-top p-2" alt="Product Thumbnail">
-                                                        <div class="card-body">
-                                                            <h5 title="{{ $product->name }}">
-                                                                <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                                                    href="/{{ $shop->url . '/' . $product->slug }}">
-                                                                    {{ Str::limit($product->name, 25, '...') }}
-                                                                </a>
-                                                            </h5>
-                                                            <span
-                                                                class="h5 fw-bold d-block">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
-                                                            <small>
-                                                                @if ($product->shop->location)
-                                                                    {{ json_decode($product->shop->location, 1)['regency'] }}
-                                                                @endif
-                                                            </small>
-                                                            <p class="card-text">
-                                                                <i class="bi bi-star-half"></i> 5.0 <i
-                                                                    class="bi bi-dot"></i>
-                                                                Terjual {{ $product->sold }}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <x-card-product :product="$product" />
                                             @endforeach
-                                            <small><a href="{{ request()->getPathInfo() }}/products?orderBy=latest"
-                                                    class="text-decoration-none">Tampilkan Lebih
-                                                    Banyak</a></small>
                                         </div>
+                                        <small><a href="{{ request()->getPathInfo() }}/products?orderBy=latest"
+                                                class="text-decoration-none">Tampilkan Lebih
+                                                Banyak</a></small>
 
                                         <hr>
 
                                         <h2 class="featurette-heading fw-normal">Terlaris</h2>
                                         <div class="card-container">
-                                            <div class="row row-cols-xxl-6">
+                                            <div class="row row-cols-md-4 row-cols-xl-5">
                                                 @foreach ($best_seller as $key => $product)
-                                                    @break($key === 6)
-                                                    <div class="col mb-3">
-                                                        <div class="card-product card border-0 shadow-hover"
-                                                            style="min-height: 24rem;">
-                                                            <img loading="lazy"src="{{ asset('storage/images/products/' . json_decode($product->image)[0]) }}"
-                                                                class="card-img-top p-2" alt="Product Thumbnail">
-                                                            <div class="card-body">
-                                                                <h5 title="{{ $product->name }}">
-                                                                    <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                                                        href="/{{ $shop->url . '/' . $product->slug }}">
-                                                                        {{ Str::limit($product->name, 25, '...') }}
-                                                                    </a>
-                                                                </h5>
-                                                                <span
-                                                                    class="h5 fw-bold d-block">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
-                                                                <small>
-                                                                    @if ($product->shop->location)
-                                                                        {{ json_decode($product->shop->location, 1)['regency'] }}
-                                                                    @endif
-                                                                </small>
-                                                                <p class="card-text">
-                                                                    <i class="bi bi-star-half"></i> 5.0 <i
-                                                                        class="bi bi-dot"></i>
-                                                                    Terjual {{ $product->sold }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <x-card-product :product="$product" />
                                                 @endforeach
-                                                <small><a
-                                                        href="{{ request()->getPathInfo() }}/products?orderBy=best_selling"
-                                                        class="text-decoration-none">Tampilkan Lebih
-                                                        Banyak</a></small>
                                             </div>
+                                            <small><a href="{{ request()->getPathInfo() }}/products?orderBy=best_selling"
+                                                    class="text-decoration-none">Tampilkan Lebih
+                                                    Banyak</a></small>
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +67,6 @@
                                 <div class="row my-5">
                                     <div class="col-lg-5 mx-auto">
 
-                                        <!-- CHECKBOX LIST -->
                                         <div class="card rounded border-0 shadow position-relative">
                                             <div class="card-body p-5">
                                                 <div class="d-flex align-items-center mb-4 pb-4 border-bottom"><i

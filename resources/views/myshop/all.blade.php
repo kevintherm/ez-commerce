@@ -57,7 +57,7 @@
                             <select class="form-select" aria-label="Order" name="orderBy"
                                 onchange="$(this).parents('form:first').submit()">
                                 <option disabled>Order By</option>
-                                <option value="asc" {{ request()->orderBy == 'asc' ? 'selected' : '' }}>Latest
+                                <option value="latest" {{ request()->orderBy == 'latest' ? 'selected' : '' }}>Latest
                                 </option>
                                 <option value="oldest" {{ request()->orderBy == 'oldest' ? 'selected' : '' }}>
                                     Oldest
@@ -68,34 +68,9 @@
                 </div>
                 <div class="col mt-5">
                     @if ($products->count())
-                        <div class="row row-cols-xxl-6">
+                        <div class="row row-cols-md-4 row-cols-xl-5">
                             @foreach ($products as $key => $product)
-                                <div class="col mb-3">
-                                    <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
-                                        <img loading="lazy"src="{{ asset('storage/images/products/' . json_decode($product->image)[0]) }}"
-                                            class="card-img-top p-2" alt="Product Thumbnail">
-                                        <div class="card-body">
-                                            <small class="badge text-bg-warning">{{ $product->catalog->name }}</small>
-                                            <h5 title="{{ $product->name }}">
-                                                <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                                    href="/{{ $shop->url . '/' . $product->slug }}">
-                                                    {{ Str::limit($product->name, 25, '...') }}
-                                                </a>
-                                            </h5>
-                                            <span
-                                                class="h5 fw-bold d-block">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
-                                            <small>
-                                                @if ($product->shop->location)
-                                                    {{ json_decode($product->shop->location, 1)['regency'] }}
-                                                @endif
-                                            </small>
-                                            <p class="card-text">
-                                                <i class="bi bi-star-half"></i> 5.0 <i class="bi bi-dot"></i>
-                                                Terjual {{ $product->sold }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <x-card-product :product="$product" />
                             @endforeach
                         </div>
                     @endif

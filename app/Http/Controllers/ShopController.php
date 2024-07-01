@@ -11,14 +11,14 @@ use App\Models\ShopCatalog;
 
 class ShopController extends Controller
 {
-    public function all(Shop $shop, Request $request)
+    public function all(Shop $shop)
     {
         $data = [
             'title' => 'All Products',
             'shop' => $shop,
             'products' => Product::where('shop_id', $shop->id)
-                ->query($request->search)
-                ->orderBy('catalog_id', 'desc')
+                ->query(request('search'))
+                ->filters(request(['orderBy']))
                 ->visibility('public')
                 ->get()
         ];
@@ -32,9 +32,21 @@ class ShopController extends Controller
         return view('myshop.index', [
             'title' => $shop->name,
             'shop' => $shop,
-            'catalogs' => $shop->catalog->all(),
-            'products' => $product->where('shop_id', $shop->id)->latest()->visibility('public')->get(),
-            'best_seller' => $product->where('shop_id', $shop->id)->orderBy('sold', 'desc')->visibility('public')->get(),
+            'catalogs' => $shop
+                ->catalog
+                ->all(),
+            'products' => $shop
+                ->products()
+                ->latest()
+                ->visibility('public')
+                ->limit(6)
+                ->get(),
+            'best_seller' => $shop
+                ->products()
+                ->orderBy('sold', 'desc')
+                ->visibility('public')
+                ->limit(6)
+                ->get(),
         ]);
     }
 
@@ -49,7 +61,7 @@ class ShopController extends Controller
             auth()->user()->username !== $product->shop->owner->username &&
             !$product->visibility
         )
-            return abort(403);
+            return abort(403, 'This item is private.');
 
         return view('myshop.show', [
             'title' => $product->name,

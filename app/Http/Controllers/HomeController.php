@@ -13,13 +13,34 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $top_on_category = ProductCategory::find(mt_rand(1, ProductCategory::count()));
+        $top_on_category = ProductCategory::
+            inRandomOrder()
+            ->first()
+            ->subcategory()
+            ->inRandomOrder()
+            ->first();
 
         return view('home', [
-            'top_shops' => Shop::limit(3)->get(),
-            'newest_products' => Product::latest()->visibility('public')->get(),
-            'top_on_category' => $top_on_category ? $top_on_category->subcategory->first() : null,
-            'best_seller' => Product::orderBy('sold', 'desc')->visibility('public')->get()
+            'top_shops' => Shop::
+                orderBy('total_ratings', 'desc')
+                ->limit(3)
+                ->get(),
+            'latest_products' => Product::
+                latest()
+                ->limit(5)
+                ->visibility('public')
+                ->get(),
+            'toc_products' => $top_on_category
+                ->products()
+                ->limit(5)
+                ->visibility('public')
+                ->get(),
+            'toc' => $top_on_category,
+            'best_seller' => Product::
+                orderBy('sold', 'desc')
+                ->limit(5)
+                ->visibility('public')
+                ->get()
         ]);
     }
 
@@ -27,9 +48,20 @@ class HomeController extends Controller
     {
         return view('search', [
             'title' => 'Semua Produk',
-            'products' => Product::filters(request()->all())->query(request('search'))->visibility('public')->get(),
-            'others' => Product::visibility('public')->get(),
-            'store_location' => Shop::all()->unique('location')->pluck('location'),
+            'products' => Product::
+                filters(request()->all())
+                ->query(request('search'))
+                ->filters(request(['order', 'min_price', 'max_price']))
+                ->category(request('subcategory'))
+                ->visibility('public')
+                ->get(),
+            'others' => Product::
+                visibility('public')
+                ->get(),
+            'store_location' => Shop::
+                get(['location'])
+                ->unique('location')
+                ->pluck('location'),
         ]);
     }
 

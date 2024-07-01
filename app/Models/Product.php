@@ -88,24 +88,15 @@ class Product extends Model
 
     public function scopeFilters($query, $filters = [])
     {
-        $query->when($filters['order'] ?? false, function ($query, $order) {
-            $order = strtolower($order);
-            if ($order == 'latest')
-                $query->orderBy('created_at', 'desc');
-            elseif ($order == 'oldest')
-                $query->orderBy('created_at', 'asc');
-            elseif ($order == 'ratings')
-                $query->orderBy('ratings', 'asc');
-            elseif ($order == 'lowest_price')
-                $query->orderBy('price', 'asc');
-            elseif ($order == 'highest_price')
-                $query->orderBy('price', 'desc');
+        $query->when($filters['orderBy'] ?? false, function ($query, $order) {
+            if ($order != 'best_selling')
+                return $query->orderBy('created_at', $order == 'latest' ? 'desc' : 'asc');
+            else
+                return $query->orderBy('sold', 'desc');
         });
 
         $query->when($filters['ratings'] ?? false, function ($query, $ratings) {
-            for ($i = 0; $i < count($ratings); $i++) {
-                $query->where('ratings', $ratings[$i])->orWhere('ratings', $ratings[$i]);
-            }
+            return $query;
         });
 
         $query->when($filters['location'] ?? false, function ($query, $location) {
@@ -136,7 +127,7 @@ class Product extends Model
         });
 
         $query->when($filters['min_price'] ?? false, function ($query, $min_price) {
-            $query->where('price', '>', $min_price);
+            $query->where('price', '>=', $min_price);
         })->when($filters['max_price'] ?? false, function ($query, $max_price) {
             $query->where('price', '<=', $max_price);
         });
@@ -162,6 +153,13 @@ class Product extends Model
     {
         $query->when($search ?? false, function ($query, $search) {
             return $query->where('name', 'LIKE', "%{$search}%")->orWhere('desc', 'LIKE', "%{$search}%");
+        });
+    }
+
+    public function scopeCategory($query, $category)
+    {
+        $query->whereHas('subcategory', function ($query) use ($category) {
+            $query->where('slug', $category);
         });
     }
 
