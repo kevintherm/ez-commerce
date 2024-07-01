@@ -233,7 +233,7 @@
                                                     <span class="float-end"><a
                                                             href="/{{ $product->shop->url . '/' . $product->slug }}#reviews"
                                                             class="small text-muted text-decoration-none">
-                                                            {{ number_format($product->ratings / 10, 1, '.', '.') }}
+                                                            {{ $product->getAvgRatings() }}
                                                         </a></span>
                                                 </div>
                                                 <h5 class="card-title">

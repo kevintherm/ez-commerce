@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderStatus;
-use App\Services\Midtrans\CreateSnapTokenService;
-use Auth;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use LaravelDaily\Invoices\Classes\Party;
+use Illuminate\Support\Facades\DB;
 use LaravelDaily\Invoices\Invoice;
 use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\Party;
 use LaravelDaily\Invoices\Classes\InvoiceItem;
+use App\Services\Midtrans\CreateSnapTokenService;
 
 class OrderController extends Controller
 {
@@ -41,14 +42,15 @@ class OrderController extends Controller
 
         $products_json = [];
         foreach ($cartProducts as $product) {
-            $productToAppend['quantity'] = $product->pivot->count;
-            $productToAppend['id'] = $product->id;
-            $productToAppend['price'] = $product->price;
-            $productToAppend['name'] = str($product->name)->limit(30, '...');
-            $productToAppend['merchant_name'] = str($product->shop->name)->limit(30, '...');
-            $productToAppend['url'] = url($product->shop->url . '/' . $product->slug);
+            $propertyToAppend['quantity'] = $product->pivot->count;
+            $propertyToAppend['id'] = $product->id;
+            $propertyToAppend['slug'] = $product->slug;
+            $propertyToAppend['price'] = $product->price;
+            $propertyToAppend['name'] = str($product->name)->limit(30, '...');
+            $propertyToAppend['merchant_name'] = str($product->shop->name)->limit(30, '...');
+            $propertyToAppend['url'] = url($product->shop->url . '/' . $product->slug);
 
-            $products_json[] = $productToAppend;
+            $products_json[] = $propertyToAppend;
         }
 
         $products_json = json_encode($products_json);
@@ -62,18 +64,24 @@ class OrderController extends Controller
             'payment_status' => 1 //Waiting for payment
         ];
 
+        DB::beginTransaction();
+
         try {
-            Order::create($params);
+            $order = Order::create($params);
+
             foreach ($cartProducts as $product) {
                 OrderStatus::create([
                     'product_id' => $product->id,
                     'shop_id' => $product->shop_id,
+                    'order_id' => $order->number,
                     'status' => 'Un-Confirmed',
                 ]);
             }
         } catch (\Illuminate\Database\QueryException $err) {
             return back()->with('alert', $err->getMessage());
         }
+
+        DB::commit();
 
         // Clear user's cart
         Cart::snap();

@@ -277,7 +277,7 @@
                                     </small>
                                     <p class="card-text">
                                         <i class="bi bi-star-half"></i>
-                                        {{ number_format($item->ratings / 10, 1) ?? '0.0' }}
+                                        {{ $item->getAvgRatings() }}
                                         <i class="bi bi-dot"></i>
                                         Terjual
                                         {{ $item->sold ?? '' }}
@@ -320,7 +320,7 @@
                                         </small>
                                         <p class="card-text">
                                             <i class="bi bi-star-half"></i>
-                                            {{ number_format($item->ratings / 10, 1) ?? '0.0' }}
+                                            {{ $item->getAvgRatings() }}
                                             <i class="bi bi-dot"></i> Terjual
                                             {{ $item->sold ?? '' }}
                                         </p>
@@ -362,7 +362,7 @@
                                     </small>
                                     <p class="card-text">
                                         <i class="bi bi-star-half"></i>
-                                        {{ number_format($item->ratings / 10, 1) ?? '0.0' }} <i class="bi bi-dot"></i>
+                                        {{ $item->getAvgRatings() }} <i class="bi bi-dot"></i>
                                         Terjual
                                         {{ $item->sold }}
                                     </p>

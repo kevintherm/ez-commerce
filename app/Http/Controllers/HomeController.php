@@ -10,14 +10,15 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
-    public function index(Shop $shop, Product $product, ProductCategory $category)
+    public function index()
     {
-        $top_on_category = ProductCategory::find(mt_rand(1, $category->count()));
+        $top_on_category = ProductCategory::find(mt_rand(1, ProductCategory::count()));
+
         return view('home', [
-            'top_shops' => $shop->all(),
-            'newest_products' => $product->latest()->visibility('public')->get(),
+            'top_shops' => Shop::limit(3)->get(),
+            'newest_products' => Product::latest()->visibility('public')->get(),
             'top_on_category' => $top_on_category ? $top_on_category->subcategory->first() : null,
-            'best_seller' => $product->orderBy('sold', 'desc')->visibility('public')->get()
+            'best_seller' => Product::orderBy('sold', 'desc')->visibility('public')->get()
         ]);
     }
 

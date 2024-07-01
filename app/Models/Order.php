@@ -45,4 +45,23 @@ class Order extends Model
                 break;
         }
     }
+
+    public function groupProductsByMerchant()
+    {
+        $result = [];
+
+        $products = json_decode($this->products_json, true);
+        $key = 'merchant_name';
+
+        foreach ($products as $val) {
+            if (array_key_exists($key, $val)) {
+                $result[$val[$key]][] = $val;
+            } else {
+                $result[""][] = $val;
+            }
+        }
+
+
+        return $result;
+    }
 }

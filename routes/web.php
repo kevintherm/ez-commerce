@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -111,9 +112,15 @@ Route::middleware(['throttle:global', 'verified'])->group(function () {
     Route::get('/wishlist_view', [WishlistController::class, 'wishlist_view']);
     Route::resource('wishlist', WishlistController::class)->only(['index', 'wishlist_view', 'store', 'destroy']);
 
-    // # Order(s)
+    # Order(s)
     Route::get('/orders/{order}/invoice', [OrderController::class, 'getInvoice'])->name('orders.invoice');
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'store']);
+
+    # Ratings
+    Route::get('give-ratings/{order}/{product:id}', [RatingController::class, 'giveRatings'])
+        ->name('ratings.create');
+    Route::post('store-ratings/{order}/{product}', [RatingController::class, 'storeRatings'])
+        ->name('ratings.store');
 
     # Create Shop
     Route::resource('/my-shop', DashboardMakeShopController::class)->only(['create', 'store'])->middleware(['auth', 'cors']);
@@ -152,7 +159,7 @@ Route::middleware(['throttle:global', 'verified'])->group(function () {
         Route::get('/{shop}/catalog', function () {
             return redirect('/{shop}#tabs-2');
         });
-        Route::get('/{shop}/{product}', 'show');
+        Route::get('/{shop}/{product}', 'show')->name('products.show');
         Route::get('/{shop}/catalog/{catalog}', 'catalog');
     });
 });

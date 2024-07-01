@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Shop;
 use App\Models\ShopCatalog;
 use Illuminate\Support\Str;
+use App\Models\ProductRating;
 use App\Models\ProductCategory;
 use App\Models\ProductSubCategory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,9 +18,9 @@ class Product extends Model
     public $guarded = ['id'];
     public $with = ['shop', 'subcategory'];
 
-    public function getVisibility($num)
+    public function getVisibility($num = null)
     {
-        switch ($num):
+        switch ($num ?? $this->visibility):
             case (1):
                 return 'Public';
 
@@ -31,6 +32,24 @@ class Product extends Model
         endswitch;
     }
 
+    public function getAvgRatings()
+    {
+        if ($this->ratings->sum('rating') === 0)
+            return 0;
+
+        return $this->ratings->sum('rating') / $this->ratings->count();
+    }
+
+    public function getFirstImage(): string
+    {
+        $image = json_decode($this->image);
+        if (!$image)
+            return '';
+
+        return $image[0];
+    }
+
+    // Relationships method
     public function catalog()
     {
         return $this->belongsTo(ShopCatalog::class);
@@ -44,6 +63,11 @@ class Product extends Model
     public function shop()
     {
         return $this->belongsTo(Shop::class, 'shop_id');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(ProductRating::class);
     }
 
     public function scopeVisibility($query, $visibility)
@@ -64,7 +88,6 @@ class Product extends Model
 
     public function scopeFilters($query, $filters = [])
     {
-
         $query->when($filters['order'] ?? false, function ($query, $order) {
             $order = strtolower($order);
             if ($order == 'latest')

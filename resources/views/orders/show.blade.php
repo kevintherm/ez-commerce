@@ -78,18 +78,40 @@
 
                                                 @default
                                                     bg-danger text-danger
-                                            @endswitch fs-6">{{ $order->getPaymentStatus($order->payment_status) }}</span>
+                                            @endswitch fs-6">{{ $order->getPaymentStatus() }}</span>
                             </div>
                         </div>
-                        <?php $order->products = json_decode($order->products_json, false); ?>
                         <div class="d-flex justify-content-between py-3" id="products_detail">
                             <div>
-                                @foreach ($order->products as $product)
-                                    <strong>{{ $product->merchant_name }}</strong>
-                                    <ul>
-                                        <li><a href="{{ $product->url }}" class="link">{{ $product->name }}</a>
-                                            x{{ $product->quantity }}</li>
-                                    </ul>
+                                @foreach ($order->groupProductsByMerchant() as $merchant_name => $products)
+                                    <strong>{{ $merchant_name }}</strong>
+                                    @foreach ($products as $product)
+                                        @php
+                                            $reviewed = \App\Models\ProductRating::where('product_id', $product['id'])
+                                                ->where('user_id', Auth::user()->id)
+                                                ->first();
+                                        @endphp
+                                        <ul>
+                                            <li>
+                                                <a href="{{ $product['url'] }}" class="link">
+                                                    {{ $product['name'] }}
+                                                </a>
+                                                x{{ $product['quantity'] }}
+                                                @if ($order->payment_status == 2)
+                                                    @if (!$reviewed)
+                                                        <a class="link-warning"
+                                                            href="{{ route('ratings.create', [$order->number, $product['id']]) }}">
+                                                            Berikan Rating
+                                                        </a>
+                                                    @else
+                                                        <a class="link-info" href="{{ $product['url'] }}#reviews">
+                                                            Lihat Review
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                            </li>
+                                        </ul>
+                                    @endforeach
                                 @endforeach
                             </div>
                             <div class="border-start d-flex flex-column justify-content-center align-items-center px-4">

@@ -63,11 +63,11 @@
                             <h4 class="card-title fw-semibold h4">
                                 {{ $product->name }}
                             </h4>
-                            <h6 class="card-subtitle mb-2 text-muted">Terjual
+                            <h6 class="card-subtitle mb-2 text-muted display-flex align-items-center">Terjual
                                 <span class="font-monospace fw-bold">{{ $product->sold }}</span>
                                 &#8226;
-                                <img loading="lazy"src="/img/star-big.svg" alt="Ulasan" width="18">
-                                4.9 (213 Ulasan)
+                                <img loading="lazy"src="/img/star-big.svg" alt="Ulasan" width="16">
+                                {{ $product->getAvgRatings() }} ({{ $product->ratings->count() }} Ulasan)
                             </h6>
                             <h2 class="price fw-bold mt-2 mb-3">Rp{{ number_format($product->price, 0, ',', '.') }}</h2>
                             <ul class="nav nav-tabs">
@@ -251,26 +251,28 @@
                                     </form>
                                 </div>
                                 </form>
-                                <div class="btn-group d-flex justify-content-center align-items-center mt-2 "
-                                    role="group">
-                                    @php
-                                        $wishlist = auth()->user()->wishlist()->first() ?? false;
-                                    @endphp
-                                    <button class="border-0 bg-transparent mx-1" id="wishlist">
-                                        <i class="{{ $wishlist &&$wishlist->products()->where('id', $product->id)->count()? 'fa-solid': 'fa-regular' }} fa-heart fa-regular"
-                                            style="cursor: pointer;" id="wishlist-icon"></i>
-                                        <small class="text-muted fw-semibold">Wishlist</small>
-                                    </button>|
-                                    <button onclick="location.href = '//wa.me/{{ $product->shop->whatsapp }}'"
-                                        class="border-0 bg-transparent mx-1">
-                                        <i class="fa-regular fa-comments fa-lg"></i>
-                                        <small class="text-muted fw-semibold">Chat</small>
-                                    </button>|
-                                    <button class="border-0 bg-transparent mx-1">
-                                        <i class="fa fa-share fa-lg"></i>
-                                        <small class="text-muted fw-semibold">Share</small>
-                                    </button>
-                                </div>
+                                @if (Auth::check())
+                                    <div class="btn-group d-flex justify-content-center align-items-center mt-2 "
+                                        role="group">
+                                        @php
+                                            $wishlist = auth()->user()->wishlist()->first() ?? false;
+                                        @endphp
+                                        <button class="border-0 bg-transparent mx-1" id="wishlist">
+                                            <i class="{{ $wishlist &&$wishlist->products()->where('id', $product->id)->count()? 'fa-solid': 'fa-regular' }} fa-heart fa-regular"
+                                                style="cursor: pointer;" id="wishlist-icon"></i>
+                                            <small class="text-muted fw-semibold">Wishlist</small>
+                                        </button>|
+                                        <button onclick="location.href = '//wa.me/{{ $product->shop->whatsapp }}'"
+                                            class="border-0 bg-transparent mx-1">
+                                            <i class="fa-regular fa-comments fa-lg"></i>
+                                            <small class="text-muted fw-semibold">Chat</small>
+                                        </button>|
+                                        <button class="border-0 bg-transparent mx-1">
+                                            <i class="fa fa-share fa-lg"></i>
+                                            <small class="text-muted fw-semibold">Share</small>
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
