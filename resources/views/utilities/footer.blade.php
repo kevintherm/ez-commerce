@@ -5,5 +5,5 @@
         <p><a role="button" onclick="$('html, body').animate({scrollTop: $('body').offset().top - 1000}, 500)">Back to
                 top 🔝</a></p>
     </div>
-    <p>&copy; E-Commerce {{ date('Y') }} </a></p>
+    <p>&copy; {{ config('app.name') }} {{ date('Y') }} </a></p>
 </footer>
