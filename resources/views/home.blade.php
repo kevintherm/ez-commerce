@@ -374,18 +374,7 @@
                 </div>
             </div>
 
-            <hr class="featurette-divider">
-
-            <h2 class="featurette-heading fw-normal">
-                Produk Lainnya
-            </h2>
-            <div class="card-container d-flex flex-column justify-content-center">
-                <div class="row row-cols-xxl-6 g-4 inf-col">
-                </div>
-                <button class="border-0 bg-transparent link " onclick="inf()" id="loadMore">Load More...</button>
-            </div>
-
-        </div><!-- /.container -->
+        </div>
 
 
         @if (auth()->check())
@@ -473,46 +462,6 @@
                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
             }
         });
-        let page = 1;
-        let inf = () => {
-
-            jQuery.ajax({
-                type: "POST",
-                url: `/utilities/inf-item?page=${page}`,
-                success: function(response) {
-                    if (page === response.items.last_page) return $('#loadMore').attr('onclick', '').html(
-                        'End Of Page').attr('disabled', '');
-                    var formatter = new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                    });
-                    page += 1;
-                    $.each(response.items.data, function(indexInArray, valueOfElement) {
-                        $('.inf-col').append(`
-                        <div class="col mb-3">
-                            <div class="card-product card border-0 shadow-hover" style="min-height: 24rem;">
-                                <img loading="lazy"src="/storage/images/products/${JSON.parse(valueOfElement.image)[0]}" class="card-img-top p-2" alt="Product Thumbnail">
-                                <div class="card-body">
-                                    <h5 title="${valueOfElement.name}">
-                                        <a class="stretched-link card-title fw-semibold text-decoration-none link-dark"
-                                            href="/${valueOfElement.shop.url}/${valueOfElement.slug}">
-                                            ${valueOfElement.name.slice(0, 25)}
-                                        </a>
-                                    </h5>
-                                    <span
-                                        class="h5 fw-bold d-block">${formatter.format(valueOfElement.price)}</span>
-                                    <small>${(JSON.parse(valueOfElement.shop.location))['regency']}</small>
-                                    <p class="card-text">
-                                        <i class="bi bi-star-half"></i> ${valueOfElement.ratings / 10} <i class="bi bi-dot"></i> Terjual
-                                        ${valueOfElement.sold}
-                                    </p>
-                                </div>
-                            </div>
-                        </div> `);
-                    });
-                }
-            });
-        }
     </script>
     @if (session('alert'))
         <script>

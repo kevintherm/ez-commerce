@@ -52,6 +52,17 @@
                                         class="form-control @error('email') is-invalid @enderror"
                                         value="{{ old('email') }}">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="phone">No. Telepon\WA</label>
+                                    <div class="input-group">
+                                        <label class="px-2 my-auto py-2 border rounded-start link-outline">
+                                            +62
+                                        </label>
+                                        <input type="phone" name="phone" id="phone"
+                                            class="form-control @error('phone') is-invalid @enderror"
+                                            placeholder="8123456789" value="{{ old('phone') }}">
+                                    </div>
+                                </div>
                                 <div class="mb-1">
                                     <label for="password">Password</label>
                                     <div class="input-group">

@@ -46,7 +46,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    static public function setStatus($user_id, $status)
+    /**
+     * 1 - Online
+     * 0 - Offline
+     */
+    static public function setStatus($user_id, $status = 0)
     {
         $user = User::find($user_id);
         $user->status = $status;
@@ -57,18 +61,13 @@ class User extends Authenticatable
     static public function setCart($user_id): bool
     {
         $checkForDuplicate = Cart::firstWhere('user_id', $user_id);
-        $result =
-            $checkForDuplicate ?
-            "EXIST" :
-            Cart::create(['user_id' => $user_id]);
 
-        if ($result == "EXIST")
+        if ($checkForDuplicate) {
             return false;
-        else if ($result) {
-            Cart::find($user_id)->products()->detach();
-            return true;
-        } else
-            return false;
+        }
+
+        Cart::create(['user_id' => $user_id]);
+        return true;
     }
 
     static public function hasShop($user_id): bool

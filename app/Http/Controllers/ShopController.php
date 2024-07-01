@@ -15,16 +15,13 @@ class ShopController extends Controller
         $data = [
             'title' => 'All Products',
             'shop' => $shop,
-            'products' => Product::where('shop_id', $shop->id)->search($request->search)->orderBy('catalog_id', 'desc')->visibility('public')->get()
+            'products' => Product::where('shop_id', $shop->id)
+                ->query($request->search)
+                ->orderBy('catalog_id', 'desc')
+                ->visibility('public')
+                ->get()
         ];
 
-        if (request('orderBy') == 'latest') {
-            $data['products'] = Product::where('shop_id', $shop->id)->latest()->visibility('public')->get();
-        } elseif (request('orderBy') == 'oldest') {
-            $data['products'] = Product::where('shop_id', $shop->id)->oldest()->visibility('public')->get();
-        } elseif (request('orderBy') == 'best_selling') {
-            $data['products'] = Product::where('shop_id', $shop->id)->best_selling()->visibility('public')->get();
-        }
 
         return view('myshop.all', $data);
     }
@@ -40,18 +37,22 @@ class ShopController extends Controller
         ]);
     }
 
+    /**
+     * Product page
+     */
     public function show(Shop $shop, Product $product, Request $request)
     {
-        try {
-            $product = $shop->products->where('slug', $product->slug)->firstOrFail();
-        } catch (\Illuminate\Support\ItemNotFoundException $e) {
-            abort(404);
-        }
+        $product = $shop
+            ->products
+            ->where('slug', $product->slug)
+            ->firstOrFail();
 
+        if (auth()->check() && auth()->user()->username !== $product->shop->owner->username && !$product->visibility)
+            return abort(403);
 
-        if (auth()->check()) {
-            if (auth()->user()->username !== $product->shop->owner->username && !$product->visibility) return abort(403);
-        } else if (!$product->visibility) return abort(403);
+        if ($product->visibility == 0) // Private
+            return abort(403, "This product is private.");
+
         return view('myshop.show', [
             'title' => $product->name,
             'product' => $product,

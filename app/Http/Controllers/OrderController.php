@@ -7,66 +7,72 @@ use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Services\Midtrans\CreateSnapTokenService;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use LaravelDaily\Invoices\Classes\Party;
+use LaravelDaily\Invoices\Invoice;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return view('orders.index', ['orders' => Auth::user()->order, 'title' => 'Daftar Pesanan']);
+        return view('orders.index', [
+            'orders' => Auth::user()
+                ->order()
+                ->latest()
+                ->get(),
+            'title' => 'Daftar Pesanan'
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Create new order
      */
-    public function create()
+    public function store()
     {
-    }
+        $user = Auth::user();
+        $cartProducts = $user->cart->products;
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $products = json_decode($request->products_json, true);
+        // Check if the cart is empty
+        if ($cartProducts->count() < 1)
+            return back()->with('alert', 'Keranjang kosong.');
 
         $products_json = [];
-        foreach ($products as $product) {
-            $product['quantity'] = $product['pivot']['count'];
-            $product['shop'] = $product['shop']['url'];
-            $product['url'] = "{$product['shop']}/{$product['slug']}";
-            $products_json[] = $product;
+        foreach ($cartProducts as $product) {
+            $productToAppend['quantity'] = $product->pivot->count;
+            $productToAppend['id'] = $product->id;
+            $productToAppend['price'] = $product->price;
+            $productToAppend['name'] = str($product->name)->limit(30, '...');
+            $productToAppend['merchant_name'] = str($product->shop->name)->limit(30, '...');
+            $productToAppend['url'] = url($product->shop->url . '/' . $product->slug);
+
+            $products_json[] = $productToAppend;
         }
+
         $products_json = json_encode($products_json);
+
+        // Order Parameter
         $params = [
-            'number' =>  mt_rand(10000000, 100000000),
-            'user_id' => auth()->user()->id,
+            'number' => mt_rand(10000000, 99999999), // order number unique
+            'user_id' => $user->id,
             'products_json' => $products_json,
-            'total_price' => Cart::getTotalPrice(auth()->user()->id) . '.00',
-            'payment_status' => 1
+            'total_price' => Cart::getTotalPrice($user->id),
+            'payment_status' => 1 //Waiting for payment
         ];
 
         try {
             Order::create($params);
-            foreach ($products as $product) {
+            foreach ($cartProducts as $product) {
                 OrderStatus::create([
-                    'product_id' => $product['id'],
-                    'shop_id' => $product['shop']['id'],
+                    'product_id' => $product->id,
+                    'shop_id' => $product->shop_id,
                     'status' => 'Un-Confirmed',
                 ]);
             }
         } catch (\Illuminate\Database\QueryException $err) {
-            return back()->with('alert', 'Total Harga Terlalu Tinggi Dalam Satu Waktu! Harap Kurangi Barang Belanja Anda');
+            return back()->with('alert', $err->getMessage());
         }
 
         // Clear user's cart
@@ -78,15 +84,11 @@ class OrderController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Order $order)
     {
-        if (auth()->user()->id !== $order->user_id) return abort(404, 'Order Not Found');
+        if (auth()->user()->id !== $order->user_id)
+            return abort(404, 'Order Not Found');
 
         $snapToken = $order->snap_token;
         if (empty($snapToken)) {
@@ -102,37 +104,49 @@ class OrderController extends Controller
         return view('orders.show', ['snapToken' => $snapToken, 'order' => $order, 'title' => "Detail Pesanan"]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function getInvoice(Order $order)
     {
-        //
+        $client = new Party([
+            'name' => 'EZ Commerce'
+        ]);
+
+        $customer = new Party([
+            'name' => $order->user->name,
+            'custom_fields' => [
+                'phone' => $order->user->phone,
+                'email' => $order->user->email,
+            ]
+        ]);
+
+        $products = json_decode($order->products_json);
+        $invoiceItems = [];
+        foreach ($products as $product) {
+            $invoiceItems[] =
+                InvoiceItem::make($product->name)
+                    ->pricePerUnit($product->price)
+                    ->quantity($product->quantity);
+        }
+
+        $invoice = Invoice::make('INVOICE')
+            ->series('#' . $order->number)
+            ->status($order->getPaymentStatus())
+            ->serialNumberFormat('{SERIES}')
+            ->buyer($customer)
+            ->seller($client)
+            ->date($order->created_at)
+            ->dateFormat('d F Y')
+            ->payUntilDays(1)
+            ->currencySymbol('Rp. ')
+            ->currencyCode('IDR')
+            ->currencyFormat('{SYMBOL}{VALUE}')
+            ->currencyThousandsSeparator('.')
+            ->currencyDecimalPoint(',')
+            ->addItems($invoiceItems)
+            ->filename('invoice-ezcommerce-' . $order->number)
+            ->logo(public_path('\img\icons-512.png'));
+
+
+        return $invoice->stream();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

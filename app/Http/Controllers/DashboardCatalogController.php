@@ -83,10 +83,13 @@ class DashboardCatalogController extends Controller
             'name' => ['required', 'string', 'max:75'],
             'desc' => ['max:2000'],
         ];
-        if ($request->slug === $catalog) $rules['slug'] = ['required', 'string', 'unique:shop_catalogs'];
-        $request->validate($rules);
 
-        $catalog->update($request->all());
+        if ($request->slug === $catalog->slug)
+            $rules['slug'] = ['required', 'string', 'unique:shop_catalogs'];
+
+        $validated = $request->validate($rules);
+
+        $catalog->update($validated);
 
         return redirect('/shop')->with('msg', [
             'body' => "Katalog $request->name Telah Diedit",

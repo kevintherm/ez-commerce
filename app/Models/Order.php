@@ -27,14 +27,14 @@ class Order extends Model
         return $totalPrice;
     }
 
-    public function getPaymentStatus($status)
+    public function getPaymentStatus($status = null)
     {
-        switch ($status) {
+        switch ($status ?? $this->payment_status) {
             case 1:
                 return 'Menunggu Pembayaran';
                 break;
             case 2:
-                return 'Berhasil';
+                return 'Dibayar';
                 break;
             case 3:
                 return 'Kadaluarsa';

@@ -47,13 +47,18 @@ class AuthController extends Controller
             $login_type => $request->input('login')
         ]);
 
-        if (Auth::attempt($request->only($login_type, 'password'), $request->only('remember'))) {
+        if (
+            Auth::attempt(
+                $request->only($login_type, 'password'),
+                $request->remember
+            )
+        ) {
             $request->session()->regenerate();
+
+            User::setCart(auth()->user()->id);
+
             // Update user status > Online
             User::setStatus(auth()->user()->id, 1);
-            // Initiate Cart For User
-            $cart = User::setCart(auth()->user()->id);
-            Wishlist::createWishlist(auth()->user()->id, 'General');
 
             redirect()->intended('/cart');
         }
@@ -63,41 +68,48 @@ class AuthController extends Controller
         ])->onlyInput('login');
     }
 
-    public function storeRegister(Request $request, User $user)
+    public function storeRegister(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
             'username' => 'required|alpha_dash|max:100|unique:users',
             'email' => 'required|email:rfc|unique:users',
+            'phone' => 'required|unique:users|max:15|min:6',
             'password' => ['required', 'min:8', Password::min(8)->mixedCase()->letters()->numbers()->uncompromised()],
             'confirm_password' => 'required|same:password'
         ]);
 
         $validatedData['password'] = bcrypt($validatedData['password']);
 
-        $user = $user->create($validatedData);
+        $user = User::create($validatedData);
 
-        event(new \Illuminate\Auth\Events\Registered($user));
-        Auth::login(User::find($user->id), true);
+        $user->sendEmailVerificationNotification();
+        Auth::login($user, true);
 
         // Update user status > Online
-        User::setStatus(auth()->user()->id, 1);
-        // Initiate Cart For User
-        $cart = User::setCart(auth()->user()->id);
-        Wishlist::createWishlist(auth()->user()->id, 'General');
+        User::setStatus($user->id, status: 1);
 
-        return redirect()->to('/home')->with('msg', ['status' => 'success', 'title' => 'Register Successfull!', 'body' => "Welcome Aboard, " . auth()->user()->name ?? 'user']);
+        // Initiate Cart For User
+        User::setCart($user->id);
+        Wishlist::createWishlist($user->id, 'General');
+
+        return redirect()->to('/home')->with('msg', ['status' => 'success', 'title' => 'Register Successfull!', 'body' => "Welcome Aboard, " . $user->name]);
     }
 
     public function logout(Request $request)
     {
-        if ($request->token !== csrf_token()) return redirect('/')->with('alert', 'Logout Failed! Please Try Again Later.');
+        if ($request->token !== csrf_token())
+            return redirect('/')->with('alert', 'Logout Failed! Please Try Again Later.');
+
         User::setStatus(auth()->user()->id, 0);
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->intended('/')->with('alert', "You Are Logged Out, Please Login Using Your Credentials");
+        return redirect()
+            ->intended('/')
+            ->with('alert', "You Are Logged Out, Please Login Using Your Credentials");
     }
 
     public function forgot()

@@ -51,30 +51,17 @@
                     <hr class="semi-thick">
                 @endif
             @endforeach
-            <li class="list-group-item d-flex justify-content-between bg-light">
-                <div class="text-success">
-                    <h6 class="my-0">Promo code</h6>
-                    <small>EXAMPLECODE</small>
-                </div>
-                <span class="text-success">−$5</span>
-                <span class="text-muted"><a role="button"><i class="bi bi-trash"></i></a></span>
-            </li>
+
             <li class="list-group-item d-flex justify-content-between">
                 <span>Total (IDR)</span>
                 <strong id="total-price">Rp {{ number_format($subtotal, 0, ',', '.') }}</strong>
             </li>
         </ul>
 
-        <form class="card p-2">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Promo code">
-                <button type="submit" class="btn btn-secondary">Redeem</button>
-            </div>
-        </form>
+
         <div class="d-grid mt-3">
             <form action="/orders" class="d-grid" method="POST">
                 @csrf
-                <input type="hidden" name="products_json" value="{{ $carts }}">
                 <button class="btn btn-primary my-1">Beli ({{ $carts->count() }})</button>
             </form>
             <form action="/cart/deleteall?token={{ csrf_token() }}" method="POST">

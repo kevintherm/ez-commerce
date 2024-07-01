@@ -35,11 +35,11 @@
                                             <h4 class="text-uppercase fw-semibold mb-0">Filter</h4>
                                             @if (count($products))
                                                 @if (request('search'))
-                                                    <p class="text-gray fst-italic mb-0"">Menemukan {{ count($products) }}
+                                                    <p class="text-gray fst-italic mb-0">Menemukan {{ count($products) }}
                                                         Produk.</p>
                                                 @endif
                                             @else
-                                                <p class="text-gray fst-italic mb-0"">Tidak Dapat Menemukan Produk</p>
+                                                <p class="text-gray fst-italic mb-0">Tidak Dapat Menemukan Produk</p>
                                             @endif
                                         </div>
                                     </div>
@@ -130,11 +130,15 @@
                                                     <hr class="semi-thick">
                                                     <div class="filter-location">
                                                         <small class="fw-semibold">Lokasi Toko</small>
+                                                        @php
+                                                            $selectedLocations = request('location', []);
+                                                        @endphp
                                                         @foreach ($store_location as $location)
-                                                            <?php $location = json_decode($location, true); ?>
+                                                            @php $location = json_decode($location, true); @endphp
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="location-{{ $location['regency'] }}"
+                                                                    {{ in_array($location['regency'], $selectedLocations) ? 'checked' : '' }}
                                                                     name="location[]" value="{{ $location['regency'] }}">
                                                                 <label class="form-check-label"
                                                                     for="location-{{ $location['regency'] }}">
@@ -248,7 +252,7 @@
                                                 <div class="d-grid gap-2 my-4">
 
                                                     <a href="/{{ $product->shop->url }}/{{ $product->slug }}?cart=1"
-                                                        class="btn btn-warning bold-btn">add to cart</a>
+                                                        class="btn btn-warning bold-btn">Lihat</a>
 
                                                 </div>
                                                 <div class="clearfix mb-1">
@@ -264,14 +268,11 @@
                                                         <span class="float-end">
                                                             @php
                                                                 $wishlist =
-                                                                    auth()
-                                                                        ->user()
-                                                                        ->wishlist()
-                                                                        ->first() ?? false;
+                                                                    auth()->user()->wishlist()->first() ?? false;
                                                             @endphp
                                                             <button class="border-0 bg-transparent" id="wishlist"
                                                                 onclick="addWishlist(this, '{{ $product->slug }}'); this.firstElementChild.classList.toggle('fa')">
-                                                                <i class="@if ($wishlist) {{ $wishlist->products()->where('id', $product->id)->count()? 'fa': 'far' }} @endif fa-heart"
+                                                                <i class="{{ $wishlist &&$wishlist->products()->where('id', $product->id)->count()? 'fa': '' }} far fa-heart"
                                                                     style="cursor: pointer"></i>
                                                             </button>
                                                         </span>
@@ -344,20 +345,14 @@
                 },
                 success: function(response) {
                     Toastify({
-                        text: 'Product Added To Wishlist',
+                        text: response,
                         close: true,
-                        style: {
-                            background: "linear-gradient(to right, #4ade80, #bbf7d0)"
-                        }
                     }).showToast();
                 },
                 error: function(response) {
                     Toastify({
                         text: response.responseText,
                         close: true,
-                        style: {
-                            background: "linear-gradient(to right, salmon, #fecdd3)"
-                        }
                     }).showToast()
                 }
             });

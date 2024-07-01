@@ -51,7 +51,7 @@
                                             </span>
                                         </li>
                                         <li class="list-group-item border-0">
-                                            {{ count(json_decode($order->products_json)) }} Produk
+                                            {{ collect(json_decode($order->products_json))->sum('quantity') }} Produk
                                         </li>
                                         <li class="list-group-item border-0 d-flex gap-2 align-items-center">
                                             @if ($order->payment_status == 1)

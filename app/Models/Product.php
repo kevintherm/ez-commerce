@@ -22,11 +22,9 @@ class Product extends Model
         switch ($num):
             case (1):
                 return 'Public';
-                break;
 
             case (2):
                 return 'Unlisted';
-                break;
 
             default:
                 return 'Private';
@@ -69,11 +67,16 @@ class Product extends Model
 
         $query->when($filters['order'] ?? false, function ($query, $order) {
             $order = strtolower($order);
-            if ($order == 'latest') $query->orderBy('created_at', 'desc');
-            elseif ($order == 'oldest')  $query->orderBy('created_at', 'asc');
-            elseif ($order == 'ratings')  $query->orderBy('ratings', 'asc');
-            elseif ($order == 'lowest_price') $query->orderBy('price', 'asc');
-            elseif ($order == 'highest_price') $query->orderBy('price', 'desc');
+            if ($order == 'latest')
+                $query->orderBy('created_at', 'desc');
+            elseif ($order == 'oldest')
+                $query->orderBy('created_at', 'asc');
+            elseif ($order == 'ratings')
+                $query->orderBy('ratings', 'asc');
+            elseif ($order == 'lowest_price')
+                $query->orderBy('price', 'asc');
+            elseif ($order == 'highest_price')
+                $query->orderBy('price', 'desc');
         });
 
         $query->when($filters['ratings'] ?? false, function ($query, $ratings) {
@@ -84,9 +87,11 @@ class Product extends Model
 
         $query->when($filters['location'] ?? false, function ($query, $location) {
             $query->whereHas('shop', function ($query) use ($location) {
-                for ($i = 0; $i < count($location); $i++) {
-                    $query->where('location', "%$location[$i]%");
-                }
+                $query->where(function ($query) use ($location) {
+                    foreach ($location as $loc) {
+                        $query->orWhere('location', 'LIKE', "%$loc%");
+                    }
+                });
             });
         });
 
@@ -103,7 +108,8 @@ class Product extends Model
         });
 
         $query->when($filters['condition'] ?? false, function ($query, $condition) {
-            if ($condition != 'all') $query->where('condition', $condition);
+            if ($condition != 'all')
+                $query->where('condition', $condition);
         });
 
         $query->when($filters['min_price'] ?? false, function ($query, $min_price) {

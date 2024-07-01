@@ -112,6 +112,7 @@ Route::middleware(['throttle:global', 'verified'])->group(function () {
     Route::resource('wishlist', WishlistController::class)->only(['index', 'wishlist_view', 'store', 'destroy']);
 
     // # Order(s)
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'getInvoice'])->name('orders.invoice');
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'store']);
 
     # Create Shop

@@ -10,10 +10,9 @@ use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Display wishlist component
      */
     public function wishlist_view()
     {
@@ -22,15 +21,16 @@ class WishlistController extends Controller
         ]);
     }
 
+    /**
+     * Display wishlist page
+     */
     public function index(Request $request)
     {
         $user = Auth::user();
-        if (!Wishlist::where('user_id', $user->id)->first()) {
-            User::setStatus(auth()->user()->id, 0);
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/login')->with('alert', 'Your Information Was Handled Incorrectly, Please Re-Login With Your Legitimate Credentials.');
+
+        // Check if user has a wishlist
+        if ($user->wishlist()->count() < 1) {
+            Wishlist::createWishlist(auth()->user()->id, 'General');
         }
 
         return view('wishlist', [
@@ -39,89 +39,49 @@ class WishlistController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Toggle an item from wishlist
      */
     public function store(Request $request)
     {
+        // only allow ajax request
+        if (!$request->isXmlHttpRequest())
+            return abort(403);
 
         $user = Auth::user();
-        if (!$request->isXmlHttpRequest()) return abort(404);
-        if (!Wishlist::where('user_id', $user->id)) {
-            User::setStatus(auth()->user()->id, 0);
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/login')->with('alert', 'Your Information Was Handled Incorrectly, Please Re-Login With Your Legitimate Credentials.');
+        $wishlist = $user->wishlist()->first();
+
+        // Check if user has a wishlist
+        if ($user->wishlist()->count() < 1) {
+            Wishlist::createWishlist(auth()->user()->id, 'General');
         }
+
         $product = Product::where('slug', $request->product)->first();
 
-        if ($user->wishlist()->first()->products()->where('id', $product->id)->count()) {
-            $user->wishlist()->first()->products()->detach($product->id);
-            return response('Removed From Wishlist', 400);
-        } else
-            $user->wishlist->first()->products()->attach($product->id);
+        if ($wishlist->products()->where('id', $product->id)->exists()) {
+            // If the product is already in the wishlist, remove it
 
-        return response([
-            'statusMessage' => 'success'
-        ], 200);
+            $wishlist->products()->detach($product->id);
+            return response('Removed From Wishlist', 200);
+        }
+
+        // If the product is not in the wishlist, add it
+        $wishlist->products()->attach($product->id);
+
+        return response('Added To Wishlist', 201);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
+     * Remove an item from wishlist
      */
     public function destroy(Wishlist $wishlist, Request $request)
     {
-        $wishlist->products()->detach(Product::where('slug', $request->product)->first()->id);
+        // only allow ajax request
+        if (!$request->isXmlHttpRequest())
+            return abort(403);
+
+        $productId = Product::where('slug', $request->product)->first()->id;
+
+        $wishlist->products()->detach($productId);
 
         return response('Success', 200);
     }

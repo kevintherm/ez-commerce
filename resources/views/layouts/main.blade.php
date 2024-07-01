@@ -45,7 +45,7 @@
 </head>
 
 <body>
-    @include('utilities.pre-loader')
+    {{-- @include('utilities.pre-loader') --}}
     @yield('content')
     @stack('script')
 

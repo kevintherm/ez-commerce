@@ -26,26 +26,17 @@ class Cart extends Model
 
     static public function getTotalPrice($user_id)
     {
-        $subtotal = [];
+        $subtotal = 0;
         foreach (User::find($user_id)->cart->products as $item) {
-            $subtotal[] = $item->price * $item->pivot->count;
+            $subtotal += $item->price * $item->pivot->count;
         }
-        $table = Cart::find($user_id)->pluck('totalprice');
-        $collect = collect($subtotal)->sum();
 
-        $total = $table !== $collect ?
-            collect($subtotal)->sum() :
-            Cart::find($user_id)->pluck('totalprice');
-
-        return $total;
+        return $subtotal;
     }
 
     static public function setTotalPrice($user_id, $totalprice)
     {
-        if (Cart::where('user_id', $user_id)->update(['totalprice' => $totalprice]))
-            return true;
-        else
-            return false;
+        return Cart::where('user_id', $user_id)->update(['totalprice' => $totalprice]);
     }
 
     static public function snap()

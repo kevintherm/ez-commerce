@@ -238,79 +238,36 @@
                                         <input type="hidden" name="count" id="count" value="1">
                                         <input type="hidden" name="notes" id="notes" value="">
                                         <input type="hidden" name="price" value="{{ $product->price }}">
-                                        <button class="h5 checkout-button btn btn-primary" name="cart"
-                                            {{ $product->disabled || $product->stock <= 0 ? 'disabled title="Product is Inactive"' : '' }}>
-                                            <i class="fa-solid fa-cart-arrow-down fa-lg"></i> Keranjang
-                                        </button>
-                                    </form>
-                                    <form action="/cart" method="POST">
-                                        @csrf
-                                        <div class="input-group">
-                                            <button class="checkout-button btn btn-outline-primary w-50" name="direct"
-                                                disabled>
-                                                Beli Langsung
+                                        @if (Auth::check())
+                                            <button class="h5 checkout-button btn btn-primary" name="cart"
+                                                {{ $product->disabled || $product->stock <= 0 ? 'disabled title="Product is Inactive"' : '' }}>
+                                                <i class="fa-solid fa-cart-arrow-down fa-lg"></i> Keranjang
                                             </button>
-                                            <select class="form-select">
-                                                <option value="wa">Whatsapp</option>
-                                                <option value="custom">Pilih Metode Pembayaran</option>
-                                            </select>
-                                        </div>
+                                        @else
+                                            <a class="h5 checkout-button btn btn-primary" href="/login">
+                                                <i class="fa-solid fa-cart-arrow-down fa-lg"></i> Keranjang
+                                            </a>
+                                        @endif
                                     </form>
                                 </div>
                                 </form>
-                                <div class="btn-group d-flex justify-content-center mt-2 " role="group">
+                                <div class="btn-group d-flex justify-content-center align-items-center mt-2 "
+                                    role="group">
+                                    @php
+                                        $wishlist = auth()->user()->wishlist()->first() ?? false;
+                                    @endphp
                                     <button class="border-0 bg-transparent mx-1" id="wishlist">
-                                        <svg version="1.1" width="25" id="Capa_1"
-                                            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                            x="0px" y="0px" viewBox="0 0 47.94 47.94"
-                                            style="enable-background:new 0 0 47.94 47.94;" xml:space="preserve">
-                                            {{-- fill:#ED8A19 / #000000 --}}
-                                            <path style="fill:#000000;"
-                                                d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
-                                                c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
-                                                c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
-                                                c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
-                                                c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
-                                                C22.602,0.567,25.338,0.567,26.285,2.486z" />
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                            <g>
-                                            </g>
-                                        </svg>
+                                        <i class="{{ $wishlist &&$wishlist->products()->where('id', $product->id)->count()? 'fa-solid': 'fa-regular' }} fa-heart fa-regular"
+                                            style="cursor: pointer;" id="wishlist-icon"></i>
                                         <small class="text-muted fw-semibold">Wishlist</small>
                                     </button>|
-                                    <button class="border-0 bg-transparent mx-1">
-                                        <i class="fa-solid fa-comments fa-lg"></i>
+                                    <button onclick="location.href = '//wa.me/{{ $product->shop->whatsapp }}'"
+                                        class="border-0 bg-transparent mx-1">
+                                        <i class="fa-regular fa-comments fa-lg"></i>
                                         <small class="text-muted fw-semibold">Chat</small>
                                     </button>|
                                     <button class="border-0 bg-transparent mx-1">
-                                        <i class="fa-solid fa-share fa-lg"></i>
+                                        <i class="fa fa-share fa-lg"></i>
                                         <small class="text-muted fw-semibold">Share</small>
                                     </button>
                                 </div>
@@ -572,8 +529,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center p-4">
-                    <img loading="lazy"src="" id="ImagePreview" class="img-fluid"
-                        onclick="openNewTab(this.src)" role="button">
+                    <img loading="lazy"src="" id="ImagePreview" class="img-fluid" onclick="openNewTab(this.src)"
+                        role="button">
                 </div>
             </div>
         </div>
@@ -610,14 +567,11 @@
                     product: "{{ $product->slug }}"
                 },
                 success: function(response) {
-                    // console.log(response)
                     Toastify({
-                        text: 'Product Added To Wishlist',
+                        text: response,
                         close: true,
-                        style: {
-                            background: "linear-gradient(to right, #4ade80, #bbf7d0)"
-                        }
                     }).showToast()
+                    $('#wishlist-icon').toggleClass('fa-solid')
                 },
                 error: function(response) {
                     console.log(response)
@@ -653,6 +607,12 @@
                         text: 'Added {{ $product->name }} To Cart'
                     })
                 },
+                error: function(response) {
+                    swal.fire({
+                        icon: 'error',
+                        text: response.responseText
+                    })
+                }
             });
         })
     </script>

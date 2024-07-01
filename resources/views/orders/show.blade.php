@@ -84,13 +84,13 @@
                         <?php $order->products = json_decode($order->products_json, false); ?>
                         <div class="d-flex justify-content-between py-3" id="products_detail">
                             <div>
-                                <strong>{{ $order->products[0]->shop }}</strong>
-                                <ul>
-                                    @foreach ($order->products as $product)
-                                        <li><a href="/{{ $product->url }}" class="link">{{ $product->name }}</a>
+                                @foreach ($order->products as $product)
+                                    <strong>{{ $product->merchant_name }}</strong>
+                                    <ul>
+                                        <li><a href="{{ $product->url }}" class="link">{{ $product->name }}</a>
                                             x{{ $product->quantity }}</li>
-                                    @endforeach
-                                </ul>
+                                    </ul>
+                                @endforeach
                             </div>
                             <div class="border-start d-flex flex-column justify-content-center align-items-center px-4">
                                 <small class="text-muted">Total Harga</small>
@@ -99,9 +99,9 @@
                         </div>
                         <div class="d-flex justify-content-start align-items-center gap-3 py-2 d-print-none"
                             id="button_group">
-                            <button class="btn btn-secondary" onclick="window.print()">
+                            <a class="btn btn-secondary" href="{{ route('orders.invoice', $order->number) }}">
                                 <i class="bi bi-printer"></i> Cetak
-                            </button>
+                            </a>
                             @if ($order->payment_status == 1)
                                 <button class="btn btn-outline-primary fw-semibold px-5" id="pay-button">Bayar</button>
                             @endif

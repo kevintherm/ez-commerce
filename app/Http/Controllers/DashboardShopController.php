@@ -11,11 +11,6 @@ use App\Http\Controllers\Controller;
 
 class DashboardShopController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Shop $shop)
     {
         return view('dashboard.shop.index', [
@@ -27,6 +22,6 @@ class DashboardShopController extends Controller
 
     public function destroy(Shop $shop)
     {
-        return true;
+        return false;
     }
 }

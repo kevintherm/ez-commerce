@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->foreignId('shop_id')->constrained('shops', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('catalog_id')->constrained('shop_catalogs')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('sub_category_id');
-            // $table->foreign('sub_category_id')->references('id')->on('product_sub_categories')->onDelete('cascade');
             $table->string('name', 255);
             $table->string('slug');
             $table->mediumText('desc')->nullable();

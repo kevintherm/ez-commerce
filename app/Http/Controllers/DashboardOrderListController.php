@@ -8,15 +8,10 @@ use Illuminate\Http\Request;
 
 class DashboardOrderListController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return view('dashboard.orderlist.index', [
-            'orderList' => OrderStatus::where('shop_id', Auth::user()->id)->get()
+            'orderList' => OrderStatus::where('shop_id', Auth::user()->shop->id)->get()
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\ShopCatalog;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -12,7 +13,16 @@ class Shop extends Model
     use HasFactory;
 
     public $guarded = ['id'];
-    // protected $primaryKey = 'user_id';
+
+    public function whatsapp(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if (!str_starts_with($value, "62"))
+                    return "62" . $value;
+            }
+        );
+    }
 
     public function owner()
     {

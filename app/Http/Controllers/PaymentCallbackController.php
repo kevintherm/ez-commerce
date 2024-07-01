@@ -25,20 +25,25 @@ class PaymentCallbackController extends Controller
                 Order::where('id', $order->id)->update([
                     'payment_status' => 2,
                 ]);
+
+
                 foreach (json_decode($order->products_json) as $product) {
                     $selected = Product::find($product->id);
-                    $selected->stock = $selected->stock - $product->pivot->count;
-                    if ($selected->stock < 0) $selected->stock = 0;
+                    $selected->stock -= $product->quantity;
+                    if ($selected->stock < 0)
+                        $selected->stock = 0;
+
+                    $selected->sold += $product->quantity;
                     $selected->save();
 
                     //
 
                     OrderStatus::where([
                         ['product_id', $product->id],
-                        ['shop_id', $product->shop_id]
-                    ])->first()->update([
-                        'status' => 'Confirmed & Paid'
-                    ]);
+                        ['shop_id', $selected->shop->id]
+                    ])
+                        ->first()
+                        ->update(['status' => 'Confirmed & Paid']);
                 }
             }
 

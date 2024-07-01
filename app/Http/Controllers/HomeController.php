@@ -23,8 +23,6 @@ class HomeController extends Controller
 
     public function searchProducts(Request $request)
     {
-        // $products = Product::order()->search($request->search)->visibility('public')->get();
-        // $products = $products->count() ? $products : Product::latest()->get();
         return view('search', [
             'title' => 'Semua Produk',
             'products' => Product::filters(request()->all())->query(request('search'))->visibility('public')->get(),
@@ -36,7 +34,7 @@ class HomeController extends Controller
     public function searchShops(Request $request)
     {
         $shops = Shop::latest()->search($request->search)->get();
-        // $shops = $shops->count() ? $shops : Product::latest()->get();
+
         return view('search', [
             'title' => 'Cari Toko',
             'shops' => $shops,

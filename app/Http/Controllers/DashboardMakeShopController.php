@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\ShopCatalog;
 use Illuminate\Http\Request;
 
 class DashboardMakeShopController extends Controller
@@ -18,7 +19,7 @@ class DashboardMakeShopController extends Controller
         return view('dashboard.create_shop', ['user' => $auth]);
     }
 
-    public function store(Shop $shop, Request $request)
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required',
@@ -35,7 +36,14 @@ class DashboardMakeShopController extends Controller
             'desc' => preg_replace('/\r\n/', PHP_EOL, $request->desc)
         ];
 
-        $shop->create(array_merge($validatedData, $otherData));
+        $shop = Shop::create(array_merge($validatedData, $otherData));
+
+        ShopCatalog::create([
+            'shop_id' => $shop->id,
+            'name' => 'Produk Lainnya',
+            'slug' => 'produk-lainnya',
+            'desc' => 'Produk Lainnya Dari Toko Ini.'
+        ]);
 
         return redirect()->back()->with('alert', 'Toko Telah Berhasil Dibuat!');
     }
