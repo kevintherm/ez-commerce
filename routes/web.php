@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RajaOngkirController;
 use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -76,11 +77,17 @@ Route::middleware(['throttle:global', 'verified'])->group(function () {
 
 
     # Utilities
-    Route::controller(UtilitiesController::class)->withoutMiddleware('verified')->group(function () {
-        Route::prefix('utilities')->group(function () {
+    Route::prefix('utilities')->group(function () {
+        Route::controller(UtilitiesController::class)->withoutMiddleware('verified')->group(function () {
             Route::get('/autocomplete', 'autocomplete');
             Route::post('/inf-item', 'infiniteItem');
             Route::get('/getslug', 'getSlug');
+        });
+
+        Route::controller(RajaOngkirController::class)->group(function () {
+            Route::get('/getprovince', 'getProvince');
+            Route::get('/getcity', 'getCity');
+            Route::get('/getcost', 'getCost');
         });
     });
 

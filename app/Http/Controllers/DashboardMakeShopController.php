@@ -25,7 +25,7 @@ class DashboardMakeShopController extends Controller
             'name' => 'required',
             'url' => 'required|unique:shops',
             'whatsapp' => 'required|min:8|max:14',
-            'desc' => 'string'
+            'desc' => 'string',
         ]);
 
         $otherData = [
@@ -33,7 +33,8 @@ class DashboardMakeShopController extends Controller
             'location' => json_encode($request->location),
             'link' => json_encode($request->link),
             'phone' => $validatedData['whatsapp'],
-            'desc' => preg_replace('/\r\n/', PHP_EOL, $request->desc)
+            'desc' => preg_replace('/\r\n/', PHP_EOL, $request->desc),
+            'location_id' => $request->location_id
         ];
 
         $shop = Shop::create(array_merge($validatedData, $otherData));

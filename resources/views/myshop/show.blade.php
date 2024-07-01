@@ -142,16 +142,17 @@
                                     <h6 class="fw-bold">Pengirim</h6>
                                     <small class="d-block">
                                         <i class="bi bi-geo-alt-fill"></i> Dikirim Dari
-                                        <b>
+                                        <b id="shop_location">
                                             @if ($product->shop->location)
                                                 {{ json_decode($product->shop->location, 1)['regency'] }}
                                             @endif
                                         </b>
                                     </small>
-                                    <small class="d-block">
-                                        <i class="bi bi-truck"></i> Ongkir : <i class="bi bi-plus-slash-minus"></i>12K |
-                                        Estimasti Tiba : 20 Juli
-                                    </small>
+                                    <div id="estimated_shipping">
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            Dapatkan Estimasi
+                                        </button>
+                                    </div>
                                 </div>
                                 {{-- <div class="promo border-bottom my-1 py-2 px-2">
                                     <h6 class="fw-bold">Promo</h6>
@@ -562,5 +563,70 @@
                 imageUrl: src
             })
         }
+    </script>
+    <script>
+        $('#estimated_shipping > button').click(() => {
+            Swal.fire({
+                title: "Dapatkan Estimasi Ongkir",
+                html: `<span>Pilih Provinsi dan Kota</span><select id="location_province" class="swal2-input form-control"><option>Pilih Provinsi</option></select>
+         <select id="location_regency" class="swal2-input form-control"><option>Pilih Kota</option></select>`,
+                showCancelButton: true,
+                confirmButtonText: "Dapatkan Estimasi",
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                preConfirm: () => {
+                    try {
+                        return $.get('/utilities/getcost', {
+                            origin: @json($product->shop->location_id),
+                            destination: $('#location_regency').val(),
+                            weight: @json($product->weight * 10),
+                            courier: 'jne'
+                        })
+                    } catch (error) {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const shippingData = result.value;
+                    const formattedData = shippingData.map(courier => {
+                        return `${courier.name} : ${courier.costs.map(cost => `${cost.service} (${cost.description}): ${cost.cost.map(c => `Rp ${c.value} - Estimasi: ${c.etd} hari`).join(', ')}`).join('\n')}`;
+                    }).join('<br><br>');
+
+
+                    Swal.fire({
+                        title: 'Estimasi Ongkir',
+                        html: formattedData,
+                    })
+
+                }
+            });
+
+            fetch('/utilities/getprovince')
+                .then(response => response.json())
+                .then(provinces => {
+                    $('#location_province').empty();
+                    provinces.forEach(data => {
+                        $('#location_province').append(
+                            `<option value="${data.province_id}" data-prov-id="${data.province_id}">${data.province}</option>`
+                        );
+                    });
+                });
+
+            $('#location_province').on('change', () => {
+                const prov = $('#location_province').val();
+                $('#location_regency').empty();
+                fetch(`/utilities/getcity?province=${prov}`)
+                    .then(response => response.json())
+                    .then(regencies => {
+                        regencies.forEach(data => {
+                            $('#location_regency').append(
+                                `<option value="${data.city_id}">${data.city_name}</option>`
+                            );
+                        });
+                    });
+            })
+
+        });
     </script>
 @endsection

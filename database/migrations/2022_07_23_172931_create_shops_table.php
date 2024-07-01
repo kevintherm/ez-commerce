@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('desc')->nullable();
             $table->string('link')->nullable();
             $table->string('total_ratings')->default('0');
+            $table->string('location_id')->nullable();
             $table->timestamps();
         });
     }

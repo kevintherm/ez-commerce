@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shop;
+use Http;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
@@ -42,7 +43,7 @@ class ShopController extends Controller
      */
     public function show(Shop $shop, Product $product, Request $request)
     {
-        // If the product is not public, only the owner can view it
+        // When the product is not public, only the owner can view it
         if (
             auth()->check() &&
             auth()->user()->username !== $product->shop->owner->username &&

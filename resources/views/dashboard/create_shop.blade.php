@@ -69,6 +69,7 @@
                             </div>
                             <div class="">
                                 <small class="d-block">Kabupaten/Kota</small>
+                                <input type="hidden" name="location_id" id="location-id">
                                 <select class="form-select @error('location.regency') is-invalid @enderror"
                                     name="location[regency]" id="location_regency" required>
                                     <option selected value="{{ old('location.province') }}">
@@ -135,29 +136,29 @@
     <script>
         $(document).ready(function() {
             let prov;
-            fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+            fetch('/utilities/getprovince')
                 .then(response => response.json())
-                .then(
-                    provinces => $.each(provinces, function(indexInArray, valueOfElement) {
-                        $('select#location_province').append(
-                            `<option value="${valueOfElement.name}" data-prov-id="${valueOfElement.id}">${valueOfElement.name}</option>`
-                        );
-                    }));
+                .then(provinces => $.each(provinces, function(index, data) {
+                    $('select#location_province').append(
+                        `<option value="${data.province_id}" data-prov-id="${data.province_id}">${data.province}</option>`
+                    );
+                }));
 
             $('select#location_province').on('change', (el) => {
                 prov = $('select#location_province option:selected').data('prov-id');
-                console.log(prov)
                 $('select#location_regency').html('');
-                fetch(
-                        `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${prov}.json`
-                    )
+                fetch(`/utilities/getcity?province=${prov}`)
                     .then(response => response.json())
                     .then(
-                        regencies => $.each(regencies, function(indexInArray, valueOfElement) {
+                        regencies => $.each(regencies, function(index, data) {
                             $('select#location_regency').append(
-                                `<option value="${valueOfElement.name}">${valueOfElement.name}</option>`
+                                `<option value="${data.city_id}">${data.city_name}</option>`
                             )
                         }));
+            })
+
+            $('select#location_regency').on('change', () => {
+                $('#location-id') = $('select#location_regency option:selected').val()
             })
 
 
