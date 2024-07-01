@@ -20,7 +20,7 @@
     <script src="/js/jquery-ui.js"></script>
     <script src="/js/bootstrap5.js"></script>
     @include('utilities.autocomplete')
-    <title>E-Comm</title>
+    <title>{{ config('app.name') }}</title>
 
     <style>
         /* GLOBAL STYLES

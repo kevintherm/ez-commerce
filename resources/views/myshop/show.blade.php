@@ -152,7 +152,7 @@
                                         Estimasti Tiba : 20 Juli
                                     </small>
                                 </div>
-                                <div class="promo border-bottom my-1 py-2 px-2">
+                                {{-- <div class="promo border-bottom my-1 py-2 px-2">
                                     <h6 class="fw-bold">Promo</h6>
                                     <div class="row row-cols-1 row-cols-lg-2">
                                         <div class="col">
@@ -176,7 +176,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="report d-flex justify-content-between">
                                     <small class="text-secondary">Laporkan Produk</small>
                                     <a href="#" class="text-decoration-none link-secondary">
@@ -189,11 +189,11 @@
                 </div>
                 <div class="col col-checkout">
                     <div class="content sticky-top promotion" style="top: 4.5em; z-index: 2;">
-                        <div class="card-body bg-secondary rounded px-3 py-2 mb-3">
+                        {{-- <div class="card-body bg-secondary rounded px-3 py-2 mb-3">
                             <a href="#" class="text-decoration-none link-light">
                                 <h5 class="card-title">Promotion Sign</h5>
                             </a>
-                        </div>
+                        </div> --}}
                         <div class="card border-0 shadow checkout-card">
                             <div class="card-body">
                                 <h5 class="card-title">

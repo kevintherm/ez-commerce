@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Cart;
 use App\Models\Shop;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -77,6 +78,11 @@ class User extends Authenticatable
             return true;
         else
             return false;
+    }
+
+    public function getStatusAttribute()
+    {
+        return Cache::has('user-is-online-' . $this->id);
     }
 
     public function shop()
