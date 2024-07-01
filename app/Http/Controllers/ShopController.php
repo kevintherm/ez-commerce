@@ -42,20 +42,31 @@ class ShopController extends Controller
      */
     public function show(Shop $shop, Product $product, Request $request)
     {
-        $product = $shop
-            ->products
-            ->where('slug', $product->slug)
-            ->firstOrFail();
-
-        if (auth()->check() && auth()->user()->username !== $product->shop->owner->username && !$product->visibility)
+        // If the product is not public, only the owner can view it
+        if (
+            auth()->check() &&
+            auth()->user()->username !== $product->shop->owner->username &&
+            !$product->visibility
+        )
             return abort(403);
-
-        if ($product->visibility == 0) // Private
-            return abort(403, "This product is private.");
 
         return view('myshop.show', [
             'title' => $product->name,
             'product' => $product,
+            'ratings' => $product
+                ->ratings()
+                ->when(
+                    auth()->user()?->id,
+                    fn($query, $id)
+                    => $query
+                        ->orderByRaw("CASE
+                            WHEN user_id = ? THEN 1
+                            ELSE 2
+                        END", // Tampilkan review user paling atas
+                            [$id]
+                        )
+                )
+                ->get()
         ]);
     }
 

@@ -133,7 +133,8 @@
                                             <small class="d-block">{!! $product->shop->owner->status
                                                 ? 'Online'
                                                 : 'Last Seen <b>' . $product->shop->owner->updated_at->diffForHumans(null) . '</b>' !!}</small>
-                                            <small><i class="bi bi-star-fill"></i> 5.0 Rata rata ulasan</small>
+                                            <small><i class="bi bi-star-fill"></i> {{ $product->shop->total_ratings }} Rata
+                                                rata ulasan</small>
                                         </div>
                                     </div>
                                 </div>
@@ -288,7 +289,7 @@
                                 <div class="col-xs-12 col-md-6">
                                     <div class="row rating-desc">
                                         <div class="col-xs-3 col-md-3 text-right">
-                                            <span class="fa fa-star"></span> 5
+                                            <span class="fa fa-star" style="color: orange"></span> 5
                                         </div>
                                         <div class="col-xs-8 col-md-9">
                                             <div class="progress">
@@ -299,7 +300,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-3 col-md-3 text-right">
-                                            <span class="fa fa-star"></span> 4
+                                            <span class="fa fa-star" style="color: orange"></span> 4
                                         </div>
                                         <div class="col-xs-8 col-md-9">
                                             <div class="progress">
@@ -310,7 +311,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-3 col-md-3 text-right">
-                                            <span class="fa fa-star"></span> 3
+                                            <span class="fa fa-star" style="color: orange"></span> 3
                                         </div>
                                         <div class="col-xs-8 col-md-9">
                                             <div class="progress">
@@ -321,7 +322,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-3 col-md-3 text-right">
-                                            <span class="fa fa-star"></span> 2
+                                            <span class="fa fa-star" style="color: orange"></span> 2
                                         </div>
                                         <div class="col-xs-8 col-md-9">
                                             <div class="progress">
@@ -332,7 +333,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-3 col-md-3 text-right">
-                                            <span class="fa fa-star"></span> 1
+                                            <span class="fa fa-star" style="color: orange"></span> 1
                                         </div>
                                         <div class="col-xs-8 col-md-9">
                                             <div class="progress">
@@ -346,16 +347,23 @@
                                     <!-- end row -->
                                 </div>
                                 <div class="col-xs-12 col-md-6 text-center">
-                                    <span class="rating-num h1">4.9<small class="fs-6">/5.0</small></span>
+                                    <span class="rating-num h1">{{ $product->getAvgRatings() }}<small
+                                            class="fs-6">/5.0</small></span>
                                     <div class="rating">
-                                        <span class="fa fa-star"></span>
-                                        <span class="fa fa-star"></span>
-                                        <span class="fa fa-star"></span>
-                                        <span class="fa fa-star"></span>
-                                        <span class="fa fa-star-half "></span>
+                                        @php
+                                            $averageRatings = $product->getAvgRatings();
+                                            $decimal = $averageRatings - floor($averageRatings);
+                                            $showDecimalStar = $decimal > 0;
+                                        @endphp
+                                        @foreach (range(1, $averageRatings) as $i)
+                                            <span class="fa fa-star" style="color: orange"></span>
+                                        @endforeach
+                                        @if ($showDecimalStar)
+                                            <span class="fa fa-star-half" style="color: orange"></span>
+                                        @endif
                                     </div>
                                     <div>
-                                        <span class="fa fa-user"></span>125888 total votes
+                                        <span class="fa fa-user"></span>{{ $product->ratings->count() }} Reviews
                                     </div>
                                 </div>
                             </div>
@@ -373,31 +381,31 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="star-5">
                                         <label class="form-check-label" for="star-5">
-                                            <span class="fa fa-star"></span> 5
+                                            <span class="fa fa-star" style="color: orange"></span> 5
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="star-4">
                                         <label class="form-check-label" for="star-4">
-                                            <span class="fa fa-star"></span> 4
+                                            <span class="fa fa-star" style="color: orange"></span> 4
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="star-3">
                                         <label class="form-check-label" for="star-3">
-                                            <span class="fa fa-star"></span> 3
+                                            <span class="fa fa-star" style="color: orange"></span> 3
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="star-2">
                                         <label class="form-check-label" for="star-2">
-                                            <span class="fa fa-star"></span> 2
+                                            <span class="fa fa-star" style="color: orange"></span> 2
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="star-1">
                                         <label class="form-check-label" for="star-1">
-                                            <span class="fa fa-star"></span> 1
+                                            <span class="fa fa-star" style="color: orange"></span> 1
                                         </label>
                                     </div>
                                     <small class="fw-semibold">Urutkan</small>
@@ -418,107 +426,37 @@
                     </div>
                     <div class="col mt-3">
                         <div class="container">
-                            @for ($i = 0; $i < 5; $i++)
+                            @foreach ($ratings as $rating)
                                 <div class="user-info border-bottom my-1 py-2 px-2 d-flex">
                                     <div class="row g-0 justify-content-center">
                                         <div class="col-12 d-flex align-items-center">
-                                            <img loading="lazy"src="{{ asset('storage/images/profiles/default.jpg') }}"
-                                                alt="Seller Profile" width="40" class="img-fluid rounded-circle">
-                                            <h5 class="fw-semibold ms-3">User Name</h5>
+                                            <img loading="lazy"src="{{ Storage::url('images/profiles/' . $rating->user->image) }}"
+                                                alt="Seller Profile" width="40" height="40"
+                                                class="img-fluid rounded-circle">
+                                            <h5 class="fw-semibold ms-3">
+                                                {{ $rating->user->name }}
+                                            </h5>
                                         </div>
                                         <div class="col mt-2">
                                             <small class="d-block">
                                                 <div class="star">
-                                                    @for ($x = 0; $x < mt_rand(1, 5); $x++)
-                                                        <i class="fa fa-star"></i>
+                                                    @for ($x = 0; $x < $rating->rating; $x++)
+                                                        <i class="fa fa-star" style="color: orange"></i>
                                                     @endfor
                                                 </div>
-                                                2 Hari Yang Lalu
+                                                {{ $rating->created_at->diffForHumans() }}
                                             </small>
                                             <p>
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium in sit
-                                                modi
-                                                veritatis quam quidem laudantium harum! Necessitatibus at similique
-                                                obcaecati
-                                                sapiente aliquam fugit esse nam dolorum quasi, culpa rerum.
+                                                {{ $rating->review }}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                            @endfor
+                            @endforeach
                         </div>
                     </div>
                 </div>
-                <div class="discuss mb-3" id="discuss">
-                    <h5 class="text-uppercase fw-bold text-muted">Diskusi Produk</h5>
-                    <div class="row">
-                        <div class="col-12 bg-light border rounded mb-3 px-3 justify-content-center align-items-center">
-                            <div class="row">
-                                <div class="col pt-3">
-                                    <p class="text-muted">
-                                        <i class="fa-solid fa-circle-question fa-lg"></i> Tanya Pertanyaan Seputar Produk
-                                    </p>
-                                </div>
-                                <div class="col-4 py-2">
-                                    <button class="btn btn-primary float-end">Pertanyaan Baru</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            @for ($i = 0; $i < 5; $i++)
-                                <div class="my-1 py-2 px-2 d-flex border rounded mb-4">
-                                    <div class="row g-0justify-content-center">
-                                        <div class="col-12 d-flex align-items-center">
-                                            <img loading="lazy"src="{{ asset('storage/images/profiles/default.jpg') }}"
-                                                alt="Seller Profile" width="35" class="img-fluid rounded-circle">
-                                            <h5 class="fw-semibold ms-3">Buyers Name · <small
-                                                    class="fs-6 fw-light font-monospace">26
-                                                    Jul</small>
-                                            </h5>
-                                        </div>
-                                        <div class="col-12 mt-2">
-                                            <p>
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium in sit
-                                                modi
-                                                veritatis quam quidem laudantium harum! Necessitatibus at similique
-                                                obcaecati
-                                                sapiente aliquam fugit esse nam dolorum quasi, culpa rerum.
-                                            </p>
-                                            <div class="bg-light border rounded px-2 py-2">
-                                                <div class="col-12 d-flex align-items-center">
-                                                    <img loading="lazy"src="{{ asset('storage/images/profiles/default.jpg') }}"
-                                                        alt="Seller Profile" width="30"
-                                                        class="img-fluid rounded-circle">
-                                                    <h6 class="fw-semibold ms-3">Seller Name · <small
-                                                            class="fs-6 fw-light font-monospace">26
-                                                            Jul</small>
-                                                    </h6>
-                                                </div>
-                                                <p>
-                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus
-                                                    delectus
-                                                    quae est asperiores nulla qui voluptas deleniti expedita vel aperiam
-                                                    nemo
-                                                    perspiciatis, commodi ipsa dolor laudantium. Nulla harum unde
-                                                    voluptatum?
-                                                </p>
-                                                <div class="col-12 d-flex align-items-center">
-                                                    <img loading="lazy"src="{{ asset('storage/images/profiles/default.jpg') }}"
-                                                        alt="Seller Profile" width="35"
-                                                        class="img-fluid rounded-circle me-2">
-                                                    <textarea onfocus="$('.btn-send{{ $i }}').show()" type="text" class="form-control input-discuss"
-                                                        placeholder="Komentar Untuk Bergabung Diskusi" rows="1"></textarea>
-                                                    <button class="btn btn-primary ms-2 btn-send{{ $i }}"
-                                                        style="display: none;">Sent</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </main>

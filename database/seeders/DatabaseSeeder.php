@@ -46,7 +46,8 @@ class DatabaseSeeder extends Seeder
                 'location' => json_encode([
                     'provice' => 'DKI Jakarta',
                     'regency' => fake()->randomElement(['Duren Sawit', 'Jatinegara', 'Cakung', 'Kramat Jati', 'Pulo Gadung', 'Ciracas'])
-                ])
+                ]),
+                'desc' => fake()->sentence()
             ]);
 
             ShopCatalog::create([

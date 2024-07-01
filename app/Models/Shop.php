@@ -4,8 +4,9 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\ShopCatalog;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\ProductRating;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Shop extends Model
@@ -24,6 +25,25 @@ class Shop extends Model
         );
     }
 
+    public function averageRatings()
+    {
+        $totalRatings = 0;
+        $productsWithReview = $this->products()->has('ratings')->with('ratings')->withSum('ratings', 'rating')->get();
+
+        foreach ($productsWithReview as $product) {
+            $totalRatings += $product->ratings_sum_rating;
+        }
+
+        if ($totalRatings == 0)
+            return 0;
+
+        $averageRatings = $totalRatings / $productsWithReview->count();
+
+        $this->total_ratings = $averageRatings;
+
+        return $averageRatings;
+    }
+
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -37,6 +57,11 @@ class Shop extends Model
     public function products()
     {
         return $this->hasMany(Product::class, 'shop_id');
+    }
+
+    public function product_ratings()
+    {
+        return $this->hasMany(ProductRating::class, 'shop_id');
     }
 
     public function getID($user)

@@ -28,7 +28,7 @@ class HomeController extends Controller
             'title' => 'Semua Produk',
             'products' => Product::filters(request()->all())->query(request('search'))->visibility('public')->get(),
             'others' => Product::visibility('public')->get(),
-            'store_location' => Shop::all()->pluck('location'),
+            'store_location' => Shop::all()->unique('location')->pluck('location'),
         ]);
     }
 

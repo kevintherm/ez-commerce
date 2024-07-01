@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -23,6 +22,7 @@ return new class extends Migration
             $table->string('whatsapp')->nullable();
             $table->string('desc')->nullable();
             $table->string('link')->nullable();
+            $table->string('total_ratings')->default('0');
             $table->timestamps();
         });
     }

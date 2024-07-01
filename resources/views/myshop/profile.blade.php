@@ -21,10 +21,12 @@
                     </small>
                     <p class="card-text"><i class="bi bi-geo-alt-fill"></i>
                         {{ join(' / ', json_decode($shop->location, true)) ?? '' }}</p>
-                    <span class="card-text d-block mb-3"><i class="bi bi-star-half"></i> 4.5 Rata-rata
+                    <span class="card-text d-block mb-3"><i class="bi bi-star-half"></i> {{ $shop->averageRatings() }}
+                        Rata-rata
                         Ulasan
                         Produk</span>
-                    <button class="btn btn-primary mb-1"><i class="bi bi-chat-dots"></i> Chat
+                    <button onclick="window.open('//wa.me/{{ $shop->whatsapp }}', '_blank').focus()"
+                        class="btn btn-primary mb-1"><i class="bi bi-chat-dots"></i> Chat
                         Seller</button>
                     <button class="btn btn-outline-primary mb-1" onclick="openModals('shareThisShop', this)">
                         <i class="bi bi-share"></i>

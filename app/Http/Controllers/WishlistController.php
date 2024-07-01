@@ -48,12 +48,13 @@ class WishlistController extends Controller
             return abort(403);
 
         $user = Auth::user();
-        $wishlist = $user->wishlist()->first();
 
         // Check if user has a wishlist
         if ($user->wishlist()->count() < 1) {
             Wishlist::createWishlist(auth()->user()->id, 'General');
         }
+
+        $wishlist = $user->wishlist()->first();
 
         $product = Product::where('slug', $request->product)->first();
 

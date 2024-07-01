@@ -18,6 +18,7 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
+            'image' => 'default.jpg',
             'username' => fake()->username(),
             'name' => fake()->name(),
             'email' => fake()->safeEmail(),

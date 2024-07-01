@@ -89,6 +89,7 @@
                                         @php
                                             $reviewed = \App\Models\ProductRating::where('product_id', $product['id'])
                                                 ->where('user_id', Auth::user()->id)
+                                                ->where('order_id', $order->id)
                                                 ->first();
                                         @endphp
                                         <ul>
