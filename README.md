@@ -3,7 +3,7 @@
 
 ## EZ-Commerce Project Description
 
-> Update: We now have real project demo! Visit this project demo at: [commerce.drmproject.my.id](https://commerce.drmproject.my.id)
+> Update: We now have real project demo! Visit this project demo at: [ezcommerce.drmproject.my.id](https://ezcommerce.drmproject.my.id)
 
 ### Overview
 
