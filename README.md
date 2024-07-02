@@ -3,6 +3,8 @@
 
 ## EZ-Commerce Project Description
 
+> Update: We now have real project demo! Visit this project demo at: [commerce.drmproject.my.id](https://commerce.drmproject.my.id)
+
 ### Overview
 
 EZ-Commerce is an innovative e-commerce platform designed to simplify the online shopping experience for both customers and merchants. The platform offers a comprehensive suite of features that enable seamless product management, user interaction, secure transactions, and personalized shopping experiences.
