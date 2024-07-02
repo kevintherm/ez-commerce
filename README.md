@@ -4,6 +4,7 @@
 ## EZ-Commerce Project Description
 
 > Update: We now have real project demo! Visit this project demo at: [ezcommerce.drmproject.my.id](https://ezcommerce.drmproject.my.id)
+> Test payment [https://simulator.sandbox.midtrans.com/](https://simulator.sandbox.midtrans.com/)
 
 ### Overview
 
